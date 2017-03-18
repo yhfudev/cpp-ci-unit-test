@@ -1,0 +1,41 @@
+/**
+ * @file    test-lang.c
+ * @brief   test code of C language for unit test framework of C
+ * @author  Yunhui Fu (yhfudev@gmail.com)
+ * @version 1.0
+ * @date    2017-03-14
+ * @copyright GNU Lesser General Public License v2.0.
+ */
+#include <stdio.h>
+#include <string.h>
+
+#define CIUT_ENABLED 1 /**< user defined, a global macro defined to 1 to active the unit test code */
+#include <ciut.h>
+
+#if defined(CIUT_ENABLED) && (CIUT_ENABLED == 1)
+
+TEST_CASE() {
+    REQUIRE(0 == 0);
+}
+
+TEST_CASE( .description="Test the __FUNCTION__ macro.", .skip=0 ) {
+    SECTION("test func") {
+        //printf ("function: %s\n", __FUNCTION__);
+        REQUIRE(0 == strcmp(__FUNCTION__, "ciut_function_auto_1"));
+    }
+}
+
+#if defined(__COUNTER__)
+TEST_CASE( .description="Test if __COUNTER__ increased.", .skip=0 ) {
+    SECTION("test counter") {
+        int c;
+        c = __COUNTER__;
+        REQUIRE(c + 1 == __COUNTER__);
+        //printf ("counter? %d\n", __COUNTER__);
+    }
+}
+#endif // __COUNTER__
+
+#endif /* CIUT_ENABLED */
+
+

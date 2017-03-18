@@ -1,0 +1,52 @@
+# integrate Coverity
+env:
+  global:
+   # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
+   #   via the "travis encrypt" command using the project repo's public key
+   - secure: "W/AGSYXP8DVdAP5ngV6s+lcTGyIax4P+FuGesSq8ogHXKMWu3KSC8AO0mTRoe3cW4mo6wFcv4n2CaQp72qP9Npw3BFkraSmxa7WplD6dlGdhyiwLcodw6S4Rl4fgw9ydPIWlA5zzaSRz/G/okWDXlAMaNnt/EGX3KNqNJG3b4dKdkDc7nqRZuUWUqQZL0mlsJaox9zDl/JJ0Eulr6l4zQcbXkcfhIGb9jmMSRLqfWCV1SrqBbCvocpBSTentlbEYK+Z0KIGDsV2ZkdFwLBqZ+OPYziRTeN2nIQlkRhze/xt1ggapgI2MPDbXbj+JSoMKNCXphxDn12ZmhLkJo+2sHzmUacu/a+0yavxh8IpC0JdHOCVt8wm9Oa9/e6ApVbqjt17GOxbiHDopdbpKbWa34/rUh6SXmrZzIQp4XErYy+Z+hDfcXgqlSB7LbGgA4dZt/qbq5v/yGdpvnjWklff43uEPtqBnBmYOzKFmvvq3jq9BUKiW/oPcay6NnTRqb0EW7crFBr/wiO19b7OEFrieTJgcPpzc+CBfnzLw5//ct+lBrKypQjxYlf+tUV/a5MjbrVEWFG+1qEdWAzLRMgWxkSMUduxFnBo8yIGyebKeGxqodHZ+HMMnAZOAz7KxAkON3GnwlBtL22bulRP85DVCE1rgGPnuHCazw3LFxJH17As="
+
+before_install:
+      - rvm get head
+      - if [[ ! "$TRAVIS_OS_NAME" == "osx" ]]; then echo -n | openssl s_client -connect scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-certificates.crt ; fi
+
+addons:
+  coverity_scan:
+    project:
+      name: $TRAVIS_REPO_SLUG
+      version: $TRAVIS_COMMIT
+      description: "Build submitted via Travis CI"
+    notification_email: yhfudev@gmail.com
+    build_command_prepend: "./autogen.sh && ./configure --enable-static --disable-shared --enable-debug CPPFLAGS=-I${TRAVIS_BUILD_DIR} && make clean"
+    build_command:   make -k
+    branch_pattern: coverity_scan
+
+sudo: required
+os:
+  - linux
+  - osx
+language: c
+compiler:
+  - clang
+  - gcc
+matrix:
+  include:
+    - os: linux
+      dist: trusty
+      compiler: gcc
+    - os: linux
+      dist: trusty
+      compiler: clang
+
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - gcc-5
+    - g++-5
+script:
+  - if [[ ! "$TRAVIS_OS_NAME" == "osx" ]]; then sudo unlink /usr/bin/gcc && sudo ln -s /usr/bin/gcc-5 /usr/bin/gcc; fi
+  - if [[ ! "$TRAVIS_OS_NAME" == "osx" ]]; then sudo unlink /usr/bin/g++ && sudo ln -s /usr/bin/g++-5 /usr/bin/g++; fi
+  - gcc --version
+  - g++ --version
+  - ./autogen.sh && ./configure --enable-static --disable-shared --enable-debug CPPFLAGS=-I${TRAVIS_BUILD_DIR} && make && sudo make install && make check
