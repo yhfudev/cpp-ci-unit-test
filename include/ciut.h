@@ -322,9 +322,25 @@ typedef struct _ciut_record_t {
         fprintf(stderr, "Options:\n");
         fprintf(stderr, "    -h            show help\n");
         fprintf(stderr, "    -t <title>    unit test title\n");
+        fprintf(stderr, "    -f <filter>   the filter string\n");
         fprintf(stderr, "    -x <xml file> log to XML file\n");
         fprintf(stderr, "    -c | -        log to stdout\n");
         fprintf(stderr, "    \n");
+    }
+
+    /**
+     * @brief the filer function
+     */
+    inline static char filter_match (const char *pattern, const char * desc)
+    {
+        if (NULL == pattern) {
+            return 1;
+        }
+        assert (NULL != desc);
+        if (NULL != strstr(desc, pattern)) {
+            return 1;
+        }
+        return 0;
     }
 
 #ifndef CIUT_HANDLE_SIGSEGV
@@ -347,6 +363,7 @@ typedef struct _ciut_record_t {
     {
         char msgbuf[200];
         const char * title = "Unit Test";
+        const char * filter = NULL;
         const char * fn_xml = NULL;
         size_t i;
         ciut_suite_t suite;
@@ -365,6 +382,10 @@ typedef struct _ciut_record_t {
                 i ++;
                 CHK_IDX(i);
                 title = argv[i];
+            } else if (0 == strcmp("-f", argv[i])) {
+                i ++;
+                CHK_IDX(i);
+                filter = argv[i];
             } else if (0 == strcmp("-x", argv[i])) {
                 i ++;
                 CHK_IDX(i);
@@ -418,7 +439,7 @@ typedef struct _ciut_record_t {
             psuite->flg_error = 0;
             psuite->cb_log(psuite->fp_log, CIUT_LOG_CASE_START, ctc_cur->name);
 
-            if (ctc_cur->skip) {
+            if (ctc_cur->skip || (0 == filter_match(filter, ctc_cur->name)) ) {
                 psuite->cnt_skipped ++;
                 snprintf(msgbuf, sizeof(msgbuf), "skip %s at (%d:%s)", ctc_cur->name, ctc_cur->line, ctc_cur->file);
                 psuite->cb_log(psuite->fp_log, CIUT_LOG_CASE_ASSERT, msgbuf);
