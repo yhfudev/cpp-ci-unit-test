@@ -321,8 +321,9 @@ typedef struct _ciut_record_t {
         fprintf(stderr, "    %s <options>\n", progname);
         fprintf(stderr, "Options:\n");
         fprintf(stderr, "    -h            show help\n");
-        fprintf(stderr, "    -t <title>    unit test title\n");
+        fprintf(stderr, "    -l            list of test cases\n");
         fprintf(stderr, "    -f <filter>   the filter string\n");
+        fprintf(stderr, "    -t <title>    unit test title\n");
         fprintf(stderr, "    -x <xml file> log to XML file\n");
         fprintf(stderr, "    -c | -        log to stdout\n");
         fprintf(stderr, "    \n");
@@ -365,6 +366,7 @@ typedef struct _ciut_record_t {
         const char * title = "Unit Test";
         const char * filter = NULL;
         const char * fn_xml = NULL;
+        char flg_list = 0;
         size_t i;
         ciut_suite_t suite;
         ciut_suite_t *psuite = &suite;
@@ -378,6 +380,8 @@ typedef struct _ciut_record_t {
             if (0 == strcmp("-h", argv[i])) {
                 usage(argv[0]);
                 exit(0);
+            } else if (0 == strcmp("-l", argv[i])) {
+                flg_list = 1;
             } else if (0 == strcmp("-t", argv[i])) {
                 i ++;
                 CHK_IDX(i);
@@ -398,6 +402,9 @@ typedef struct _ciut_record_t {
                 fprintf(stderr, "Error: unknown parameter %s.\n", argv[i]);
                 exit(1);
             }
+        }
+        if (flg_list) {
+            fn_xml = NULL;
         }
 
         if (NULL != fn_xml) {
@@ -439,13 +446,20 @@ typedef struct _ciut_record_t {
             psuite->flg_error = 0;
             psuite->cb_log(psuite->fp_log, CIUT_LOG_CASE_START, ctc_cur->name);
 
-            if (ctc_cur->skip || (0 == filter_match(filter, ctc_cur->name)) ) {
+            if (((filter == NULL) && ctc_cur->skip) || (0 == filter_match(filter, ctc_cur->name)) ) {
                 psuite->cnt_skipped ++;
                 snprintf(msgbuf, sizeof(msgbuf), "skip %s at (%d:%s)", ctc_cur->name, ctc_cur->line, ctc_cur->file);
                 psuite->cb_log(psuite->fp_log, CIUT_LOG_CASE_ASSERT, msgbuf);
                 psuite->cb_log(psuite->fp_log, CIUT_LOG_CASE_SKIPED, ctc_cur->name);
                 continue;
             }
+
+            if (flg_list) {
+                // list the item
+                fprintf (stdout, "% 3d) %s -- %s\n", psuite->cnt_total, ctc_cur->name, ctc_cur->description);
+                continue;
+            }
+
 #if (CIUT_HANDLE_SIGSEGV == 1)
             if (setjmp(jbuf_run) == 0) {
 #if __cplusplus
@@ -486,11 +500,13 @@ typedef struct _ciut_record_t {
         }
 
         psuite->cb_log(psuite->fp_log, CIUT_LOG_SUITE_END, title);
-        fprintf(stdout, "Results:\n");
-        fprintf(stdout, "    total cases: %lu\n", psuite->cnt_total);
-        fprintf(stdout, "   passed cases: %lu\n", psuite->cnt_total - psuite->cnt_failed - psuite->cnt_skipped);
-        fprintf(stdout, "  skipped cases: %lu\n", psuite->cnt_skipped);
-        fprintf(stdout, "   failed cases: %lu\n", psuite->cnt_failed);
+        if (! flg_list) {
+            fprintf(stdout, "Results:\n");
+            fprintf(stdout, "    total cases: %lu\n", psuite->cnt_total);
+            fprintf(stdout, "   passed cases: %lu\n", psuite->cnt_total - psuite->cnt_failed - psuite->cnt_skipped);
+            fprintf(stdout, "  skipped cases: %lu\n", psuite->cnt_skipped);
+            fprintf(stdout, "   failed cases: %lu\n", psuite->cnt_failed);
+        }
         if (NULL != psuite->fp_log) {
             fclose((FILE *)psuite->fp_log);
         }
