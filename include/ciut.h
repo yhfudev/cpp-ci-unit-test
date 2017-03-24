@@ -14,7 +14,9 @@
 #include <stdlib.h> // exit()
 #include <string.h> // memset()
 #include <time.h>   // localtime_r()
+#include <stdarg.h>
 #include <assert.h>
+
 
 // user defined, a global macro defined to 1 to active the unit test code
 //#define CIUT_ENABLED 1
@@ -28,7 +30,7 @@
 #define CIUT_LOG_CASE_SUCCESS 0x05
 #define CIUT_LOG_CASE_FAILED  0x06
 #define CIUT_LOG_CASE_SKIPED  0x07
-typedef void (* ciut_cb_log_t)(void *fp, int type, const char *msg);
+typedef void (* ciut_cb_log_t)(void *fp, int type, const char *msg, ...);
 
 /**
  * @brief to record the test results
@@ -209,24 +211,24 @@ typedef struct _ciut_record_t {
 
     #define CIUT_TEST_CASE2(basename, ...) _CIUT_TEST_CASE1_WITH_NAME(basename, __VA_ARGS__)
 
+    #define CIUT_LOG(fmt, ...) \
+        assert (NULL != psuite->cb_log); \
+        psuite->cb_log(psuite->fp_log, CIUT_LOG_CASE_ASSERT, "[%s():%d:%s] " fmt "\n", __FUNCTION__, __LINE__, __FILE__,  __VA_ARGS__)
 
     #define CIUT_SECTION(msg)
     #define CIUT_ASSERT(a) if(!(a)) { \
-        char buffer[300]; \
         psuite->flg_error = 1; \
-        assert (NULL != psuite->cb_log); \
-        snprintf (buffer, sizeof(buffer), "[%s():%d:%s] " # a "\n", __FUNCTION__, __LINE__, __FILE__); \
-        psuite->cb_log(psuite->fp_log, CIUT_LOG_CASE_ASSERT, buffer); \
+        CIUT_LOG ("ASSERT: %s", #a); \
         return; \
     }
 
     #if defined(CIUT_PLACE_MAIN) && (CIUT_PLACE_MAIN == 1)
 
-    inline static void ciut_cb_log_null(void *fp, int type, const char *msg)
+    inline static void ciut_cb_log_null(void *fp, int type, const char *msg, ...)
     {
     }
 
-    inline static void ciut_cb_log_plaintext(void *fp, int type, const char *msg)
+    inline static void ciut_cb_log_plaintext(void *fp, int type, const char *msg, ...)
     {
         switch (type) {
         case CIUT_LOG_CASE_SUCCESS:
@@ -239,7 +241,12 @@ typedef struct _ciut_record_t {
             fprintf((FILE *)fp, "FAIL: %s\n", msg);
             break;
         case CIUT_LOG_CASE_ASSERT:
-            fprintf((FILE *)fp, "ASSERT: %s\n", msg);
+        {
+            va_list args;
+            va_start (args, msg);
+            vfprintf((FILE *)fp, msg, args);
+            va_end (args);
+        }
             break;
         case CIUT_LOG_CASE_START:
             break;
@@ -265,7 +272,7 @@ typedef struct _ciut_record_t {
      * @param msg : the log message
      *
      */
-    inline static void ciut_cb_log_xml(void *fp, int type, const char *msg)
+    inline static void ciut_cb_log_xml(void *fp, int type, const char *msg, ...)
     {
         //struct timeval tv; gettimeofday(&tv, NULL);
         static char tbuf[sizeof ("yyyy-mm-dd hh:mm:ss.mmmmmm") + 2] = { 0 };
@@ -298,7 +305,14 @@ typedef struct _ciut_record_t {
             fprintf((FILE *)fp, "    <result>failed</result>\n  </testcase>\n");
             break;
         case CIUT_LOG_CASE_ASSERT:
-            fprintf((FILE *)fp, "    <output><![CDATA[%s]]></output>\n", msg);
+            fprintf((FILE *)fp, "    <output><![CDATA[");
+        {
+            va_list args;
+            va_start (args, msg);
+            vfprintf((FILE *)fp, msg, args);
+            va_end (args);
+        }
+            fprintf((FILE *)fp, "]]></output>\n");
             break;
         case CIUT_LOG_CASE_START:
             fprintf((FILE *)fp, "  <testcase>\n    <desc>%s</desc>\n", msg);
@@ -523,6 +537,7 @@ typedef struct _ciut_record_t {
     #define CIUT_TEST_CASE1(msg)
     #define CIUT_SECTION(msg)
     #define CIUT_ASSERT(a) assert(a)
+    #define CIUT_LOG(msg)
 #endif
 
 #define TEST_CASE               CIUT_TEST_CASE1

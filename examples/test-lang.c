@@ -20,7 +20,7 @@ TEST_CASE() {
 
 TEST_CASE( .description="Test the __FUNCTION__ macro.", .skip=0 ) {
     SECTION("test func") {
-        //printf ("function: %s\n", __FUNCTION__);
+        CIUT_LOG ("function: %s", __FUNCTION__);
         REQUIRE(0 == strcmp(__FUNCTION__, "ciut_function_auto_1"));
     }
 }
@@ -31,7 +31,7 @@ TEST_CASE( .description="Test if __COUNTER__ increased.", .skip=0 ) {
         int c;
         c = __COUNTER__;
         REQUIRE(c + 1 == __COUNTER__);
-        //printf ("counter? %d\n", __COUNTER__);
+        CIUT_LOG ("counter? %d", __COUNTER__);
     }
 }
 #endif // __COUNTER__

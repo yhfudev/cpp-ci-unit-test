@@ -64,6 +64,8 @@ Usage:
     ./ciutexc <options>
 Options:
     -h            show help
+    -l            list of test cases
+    -f <filter>   the filter string
     -t <title>    unit test title
     -x <xml file> log to XML file
     -c | -        log to stdout
