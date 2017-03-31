@@ -38,7 +38,7 @@ TEST_CASE() {
 }
 
 TEST_CASE( .description="Test float point equation.", .skip=0 ) {
-    CIUT_DBL_EQUAL(0.1 + 0.2 == 0.3);
+    CIUT_DBL_EQUAL(0.1 + 0.2, 0.3);
 }
 
 TEST_CASE( .description="Test the __FUNCTION__ macro.", .skip=0 ) {
