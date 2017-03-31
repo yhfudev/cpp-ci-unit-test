@@ -6,10 +6,11 @@
  * @date    2017-03-17
  * @copyright GNU Lesser General Public License v2.0.
  */
-#define CIUT_ENABLED 1 /**< user defined, a global macro defined to 1 to active the unit test code */
-#include <ciut.h>
+//#define CIUT_ENABLED 1 /**< user defined, a global macro defined to 1 to active the unit test code */
 
 #if defined(CIUT_ENABLED) && (CIUT_ENABLED == 1)
+#include <ciut.h>
+
 TEST_CASE( .description="Test C++ exception.", .skip=1 ) {
     SECTION("test func") {
         throw "exception test";

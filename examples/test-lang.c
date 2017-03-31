@@ -9,19 +9,23 @@
 #include <stdio.h>
 #include <string.h>
 
-#define CIUT_ENABLED 1 /**< user defined, a global macro defined to 1 to active the unit test code */
-#include <ciut.h>
+/*#define CIUT_ENABLED 1 /**< user defined, a global macro defined to 1 to active the unit test code */
 
 #if defined(CIUT_ENABLED) && (CIUT_ENABLED == 1)
+#include <ciut.h>
 
 TEST_CASE() {
     REQUIRE(0 == 0);
 }
 
+TEST_CASE( .description="Test float point equation.", .skip=0 ) {
+    CIUT_DBL_EQUAL(0.1 + 0.2, 0.3);
+}
+
 TEST_CASE( .description="Test the __FUNCTION__ macro.", .skip=0 ) {
     SECTION("test func") {
         CIUT_LOG ("function: %s", __FUNCTION__);
-        REQUIRE(0 == strcmp(__FUNCTION__, "ciut_function_auto_1"));
+        REQUIRE(0 == strcmp(__FUNCTION__, "ciut_function_auto_2"));
     }
 }
 

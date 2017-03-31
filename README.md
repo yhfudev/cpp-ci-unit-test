@@ -29,12 +29,16 @@ For source code, place the unit test cases either in your c source code file, or
 #include <string.h>
 
 #define CIUT_ENABLED 1 /**< user defined, a global macro defined to 1 to active the unit test code */
-#include <ciut.h>
 
 #if defined(CIUT_ENABLED) && (CIUT_ENABLED == 1)
+#include <ciut.h>
 
 TEST_CASE() {
     REQUIRE(0 == 1);
+}
+
+TEST_CASE( .description="Test float point equation.", .skip=0 ) {
+    CIUT_DBL_EQUAL(0.1 + 0.2 == 0.3);
 }
 
 TEST_CASE( .description="Test the __FUNCTION__ macro.", .skip=0 ) {
