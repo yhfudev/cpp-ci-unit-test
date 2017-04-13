@@ -545,7 +545,7 @@ typedef struct _ciut_record_t {
 #define REQUIRE(a)              CIUT_ASSERT(a)
 
 #define DBL_ERRROR (1e-15)
-#define DBL_CLOSETO(val, target, error) (fabs(((val) - (target))/(target)) <= (error))
+#define DBL_CLOSETO(val, target, error) (((target)==0.0)?(fabs((val) - (target)) <= (error)):(fabs(((val) - (target))/(target)) <= (error)))
 #define CIUT_DBL_EQUAL(val, target) REQUIRE(DBL_CLOSETO(val, target, DBL_ERRROR))
 
 #endif /* _CI_UNIT_TEST_H */
