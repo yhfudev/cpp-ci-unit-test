@@ -4,7 +4,7 @@
  * @author  Yunhui Fu (yhfudev@gmail.com)
  * @version 1.0
  * @date    2017-03-17
- * @copyright GNU Lesser General Public License v2.0.
+ * @copyright MIT License
  */
 
 /*#define CIUT_ENABLED 1 /**< user defined, a global macro defined to 1 to active the unit test code */

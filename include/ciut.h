@@ -215,7 +215,7 @@ typedef struct _ciut_record_t {
         assert (NULL != psuite->cb_log); \
         psuite->cb_log(psuite->fp_log, CIUT_LOG_CASE_ASSERT, "[%s():%d:%s] " fmt "\n", __FUNCTION__, __LINE__, __FILE__,  __VA_ARGS__)
 
-    #define CIUT_SECTION(msg)
+    #define CIUT_SECTION(msg) CIUT_LOG ("SECTION: %s", msg);
     #define CIUT_ASSERT(a) if(!(a)) { \
         psuite->flg_error = 1; \
         CIUT_LOG ("ASSERT: %s", #a); \

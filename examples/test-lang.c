@@ -4,7 +4,7 @@
  * @author  Yunhui Fu (yhfudev@gmail.com)
  * @version 1.0
  * @date    2017-03-14
- * @copyright GNU Lesser General Public License v2.0.
+ * @copyright MIT License
  */
 #include <stdio.h>
 #include <string.h>
