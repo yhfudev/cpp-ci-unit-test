@@ -11,14 +11,16 @@ License | Travis | Appveyor | Coverity
 
 We introduce ciut as an unit test framwork for C and C++, has following features:
 
-* the user will invest as small amount of code as possible to get a working frame code;
-* the test cases are registered automatically;
-* the unit test code can be placed in both with the code or in a seperated file;
-* the unit test framework itself is portable(in a single header);
-* user don't need specify the test name, it's generated automatically if not given;
-* the test case can be skipped by specify the argument in the TEST_CASE();
-* handle the segmentation fault smoothly.
-
+* adding tests with minimal hassle, no manual code to add test cases to suites, the test cases are registered automatically;
+* single header file, no extra library files, portable and easy to integrate;
+* minimized number of APIs to learn quick;
+* don't need specify the test name, it's generated automatically if not given;
+* the test case can be skipped by specify the argument '.skip=1' in the TEST_CASE(), switch it on/off by only one single char!
+* the unit test code can be placed in both with the code or in a separated file;
+* reports file and line number of the fail point;
+* continue testing next after reporting assertion fail or segmentation fault;
+* support float equality checking;
+* test cases can be selected to run by providing filter arguments in command line;
 
 Usage
 -----
