@@ -52,6 +52,7 @@ ciutexcpp_SOURCES= \
     test-lang.c \
     test-sigsegv.c \
     test-exception.cpp \
+    test-library.cpp \
     $(NULL)
 ciutexcpp_CXXFLAGS = -std=c++11 $(AM_CPPFLAGS) -DDOCUMENT_FOLDER=\"$(DOCUMENT_FOLDER)\"
 ciutexcpp_LDFLAGS = $(AM_LDFLAGS)

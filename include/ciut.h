@@ -17,6 +17,9 @@
 #include <stdarg.h>
 #include <assert.h>
 
+#include "ucport.h"
+#include "uctime.h"
+#include "uclog.h"
 
 // user defined, a global macro defined to 1 to active the unit test code
 //#define CIUT_ENABLED 1
@@ -38,10 +41,14 @@ typedef void (* ciut_cb_log_t)(void *fp, int type, const char *msg, ...);
 typedef struct _ciut_suite_t {
     size_t cnt_total;      /**< the total number of tests */
     size_t cnt_failed;     /**< the number of failed tests */
-    size_t cnt_skipped;     /**< the number of skipped tests */
-    int flg_error;         /**< temp variable for indicating error */
-    void * fp_log;         /**< the pointer for log */
-    ciut_cb_log_t cb_log;  /**< the callback for log */
+    size_t cnt_skipped;    /**< the number of skipped tests */
+
+    int           flg_error;  /**< temp variable for indicating error */
+    void *        fp_log;     /**< the pointer for log */
+    ciut_cb_log_t cb_log;     /**< the callback for log */
+
+    const char *  error_file; /**< the source code file name of assert error*/
+    int           error_line; /**< the source code file line number of assert error*/
 } ciut_suite_t;
 
 #define _CIUT_FUNCTION_ARGS ciut_suite_t *psuite  /**< the arguments for test case functions */
@@ -218,6 +225,8 @@ typedef struct _ciut_record_t {
     #define CIUT_SECTION(msg) CIUT_LOG ("SECTION: %s", msg);
     #define CIUT_ASSERT(a) if(!(a)) { \
         psuite->flg_error = 1; \
+        psuite->error_file = __FILE__; \
+        psuite->error_line = __LINE__; \
         CIUT_LOG ("ASSERT: %s", #a); \
         return; \
     }
@@ -245,6 +254,7 @@ typedef struct _ciut_record_t {
             va_list args;
             va_start (args, msg);
             vfprintf((FILE *)fp, msg, args);
+            fprintf((FILE *)fp, "\n");
             va_end (args);
         }
             break;
@@ -257,13 +267,6 @@ typedef struct _ciut_record_t {
             break;
         }
     }
-
-    #include <sys/time.h> // gettimeofday()
-
-#if _WIN32
-    // struct tm * localtime_r(const time_t *timep, struct tm *result);
-    #define localtime_r(timep, result) ((localtime_s(result, timep) == 0) ? result : NULL)
-#endif
 
     /**
      * @brief log the message in xml
@@ -384,10 +387,15 @@ typedef struct _ciut_record_t {
         size_t i;
         ciut_suite_t suite;
         ciut_suite_t *psuite = &suite;
+        struct timeval tv_start;
+        struct timeval tv_end;
 
         assert (psuite);
         memset (psuite, 0, sizeof(*psuite));
-        psuite->cb_log = ciut_cb_log_null;
+
+        psuite->fp_log = stdout;
+        //psuite->cb_log = ciut_cb_log_null;
+        psuite->cb_log = ciut_cb_log_plaintext;
 
         for (i = 1; i < argc; i ++) {
             #define CHK_IDX(i) if (i >= argc) { fprintf(stderr, "Error in arguments. Use argument '-h' to show help.\n"); exit(1); }
@@ -410,8 +418,6 @@ typedef struct _ciut_record_t {
                 fn_xml = argv[i];
             } else if ((0 == strcmp("-", argv[i])) || (0 == strcmp("-c", argv[i]))) {
                 fn_xml = NULL;
-                psuite->fp_log = stdout;
-                psuite->cb_log = ciut_cb_log_plaintext;
             } else {
                 fprintf(stderr, "Error: unknown parameter %s.\n", argv[i]);
                 exit(1);
@@ -474,22 +480,26 @@ typedef struct _ciut_record_t {
                 continue;
             }
 
+
 #if (CIUT_HANDLE_SIGSEGV == 1)
             if (setjmp(jbuf_run) == 0) {
 #if __cplusplus
             try {
 #endif
 #endif
-
+                gettimeofday(&tv_start, NULL);
                 ctc_cur->run(psuite);
+                gettimeofday(&tv_end, NULL);
 
 #if (CIUT_HANDLE_SIGSEGV == 1)
 #if __cplusplus
             } catch (const std::exception &e) {
+                gettimeofday(&tv_end, NULL);
                 psuite->flg_error = 1;
                 snprintf(msgbuf, sizeof(msgbuf), "C++ exception at (%d:%s): %s", ctc_cur->line, ctc_cur->file, e.what());
                 psuite->cb_log(psuite->fp_log, CIUT_LOG_CASE_ASSERT, msgbuf);
             } catch(...) {
+                gettimeofday(&tv_end, NULL);
                 psuite->flg_error = 1;
                 snprintf(msgbuf, sizeof(msgbuf), "C++ exception at (%d:%s)", ctc_cur->line, ctc_cur->file);
                 psuite->cb_log(psuite->fp_log, CIUT_LOG_CASE_ASSERT, msgbuf);
@@ -497,31 +507,36 @@ typedef struct _ciut_record_t {
 #endif
             } else {
                 // from longjmp()
+                gettimeofday(&tv_end, NULL);
                 psuite->flg_error = 1;
                 snprintf(msgbuf, sizeof(msgbuf), "Sigmentation fault at (%d:%s)", ctc_cur->line, ctc_cur->file);
                 psuite->cb_log(psuite->fp_log, CIUT_LOG_CASE_ASSERT, msgbuf);
             }
 #endif
+            // calculate the time
+            timeval_sub (&tv_end, &tv_start, &tv_end);
+            assert ((tv_end.tv_sec >=0) && (tv_end.tv_usec >=0));
 
             if (psuite->flg_error) {
-                snprintf(msgbuf, sizeof(msgbuf), "%s at (%d:%s)", ctc_cur->name, ctc_cur->line, ctc_cur->file);
+                snprintf(msgbuf, sizeof(msgbuf), "%s time(%d.%06d) at (%d:%s)", ctc_cur->name, tv_end.tv_sec, tv_end.tv_usec, psuite->error_line, psuite->error_file);
                 psuite->cb_log(psuite->fp_log, CIUT_LOG_CASE_FAILED, msgbuf);
                 psuite->cnt_failed ++;
             } else {
-                snprintf(msgbuf, sizeof(msgbuf), "%s at (%d:%s)", ctc_cur->name, ctc_cur->line, ctc_cur->file);
+                snprintf(msgbuf, sizeof(msgbuf), "%s time(%d.%06d) at (%d:%s)", ctc_cur->name, tv_end.tv_sec, tv_end.tv_usec, ctc_cur->line, ctc_cur->file);
                 psuite->cb_log(psuite->fp_log, CIUT_LOG_CASE_SUCCESS, msgbuf);
             }
+
         }
 
         psuite->cb_log(psuite->fp_log, CIUT_LOG_SUITE_END, title);
         if (! flg_list) {
             fprintf(stdout, "Results:\n");
             fprintf(stdout, "    total cases: %lu\n", psuite->cnt_total);
-            fprintf(stdout, "   passed cases: %lu\n", psuite->cnt_total - psuite->cnt_failed - psuite->cnt_skipped);
             fprintf(stdout, "  skipped cases: %lu\n", psuite->cnt_skipped);
+            fprintf(stdout, "   passed cases: %lu\n", psuite->cnt_total - psuite->cnt_failed - psuite->cnt_skipped);
             fprintf(stdout, "   failed cases: %lu\n", psuite->cnt_failed);
         }
-        if (NULL != psuite->fp_log) {
+        if ((NULL != psuite->fp_log) && (stdout != psuite->fp_log)) {
             fclose((FILE *)psuite->fp_log);
         }
         return (psuite->cnt_failed > 0);
