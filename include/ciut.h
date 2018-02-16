@@ -15,6 +15,7 @@
 #include <string.h> // memset()
 #include <time.h>   // localtime_r()
 #include <stdarg.h>
+#include <math.h>
 #include <assert.h>
 
 #include "ucport.h"
@@ -478,7 +479,7 @@ typedef struct _ciut_record_t {
 
             if (flg_list) {
                 // list the item
-                fprintf (stdout, "% 3d) %s -- %s\n", psuite->cnt_total, ctc_cur->name, ctc_cur->description);
+                fprintf (stdout, "% 3" PRIuSZ ") %s -- %s\n", psuite->cnt_total, ctc_cur->name, ctc_cur->description);
                 continue;
             }
 
@@ -520,11 +521,11 @@ typedef struct _ciut_record_t {
             assert ((tv_end.tv_sec >=0) && (tv_end.tv_usec >=0));
 
             if (psuite->flg_error) {
-                snprintf(msgbuf, sizeof(msgbuf), "%s time(%d.%06d) at (%d:%s)", ctc_cur->name, tv_end.tv_sec, tv_end.tv_usec, psuite->error_line, psuite->error_file);
+                snprintf(msgbuf, sizeof(msgbuf), "%s time(%ld.%06ld) at (%d:%s)", ctc_cur->name, tv_end.tv_sec, tv_end.tv_usec, psuite->error_line, psuite->error_file);
                 psuite->cb_log(psuite->fp_log, CIUT_LOG_CASE_FAILED, msgbuf);
                 psuite->cnt_failed ++;
             } else {
-                snprintf(msgbuf, sizeof(msgbuf), "%s time(%d.%06d) at (%d:%s)", ctc_cur->name, tv_end.tv_sec, tv_end.tv_usec, ctc_cur->line, ctc_cur->file);
+                snprintf(msgbuf, sizeof(msgbuf), "%s time(%ld.%06ld) at (%d:%s)", ctc_cur->name, tv_end.tv_sec, tv_end.tv_usec, ctc_cur->line, ctc_cur->file);
                 psuite->cb_log(psuite->fp_log, CIUT_LOG_CASE_SUCCESS, msgbuf);
             }
 
@@ -533,10 +534,10 @@ typedef struct _ciut_record_t {
         psuite->cb_log(psuite->fp_log, CIUT_LOG_SUITE_END, title);
         if (! flg_list) {
             fprintf(stdout, "Results:\n");
-            fprintf(stdout, "    total cases: %lu\n", psuite->cnt_total);
-            fprintf(stdout, "  skipped cases: %lu\n", psuite->cnt_skipped);
-            fprintf(stdout, "   passed cases: %lu\n", psuite->cnt_total - psuite->cnt_failed - psuite->cnt_skipped);
-            fprintf(stdout, "   failed cases: %lu\n", psuite->cnt_failed);
+            fprintf(stdout, "    total cases: %" PRIuSZ "\n", psuite->cnt_total);
+            fprintf(stdout, "  skipped cases: %" PRIuSZ "\n", psuite->cnt_skipped);
+            fprintf(stdout, "   passed cases: %" PRIuSZ "\n", psuite->cnt_total - psuite->cnt_failed - psuite->cnt_skipped);
+            fprintf(stdout, "   failed cases: %" PRIuSZ "\n", psuite->cnt_failed);
         }
         if ((NULL != psuite->fp_log) && (stdout != psuite->fp_log)) {
             fclose((FILE *)psuite->fp_log);
