@@ -41,7 +41,7 @@ static ssize_t writer(void *cookie, char const *data, size_t leng)
     return  leng;
 }
 
-#if 0
+#if 1
 // freebsd
 #define fsyslog(pfp) *(pfp) = fwopen(NULL, writer)
 #else
