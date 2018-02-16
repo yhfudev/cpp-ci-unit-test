@@ -22,15 +22,16 @@ We introduce ciut as an unit test framwork for C and C++, has following features
 * support float equality checking;
 * test cases can be selected to run by providing filter arguments in command line;
 
-Usage
------
 
-For source code, place the unit test cases either in your c source code file, or in a seperate file. for example:
+Simple Usage
+------------
+
+For source code, place the unit test cases either in your c source code file, or in a seperate file. for example, mytests.c:
 
 ```C
 #include <string.h>
 
-#define CIUT_ENABLED 1 /**< user defined, a global macro defined to 1 to active the unit test code */
+// #define CIUT_ENABLED 1 /**< user defined, a global macro defined to 1 to active the unit test code */
 
 #if defined(CIUT_ENABLED) && (CIUT_ENABLED == 1)
 #include <ciut.h>
@@ -51,16 +52,26 @@ TEST_CASE( .description="Test the __FUNCTION__ macro.", .skip=0 ) {
 #endif /* CIUT_ENABLED */
 ```
 
-and then, place the ciut main function in somewhere,
+and then, place the ciut main function in somewhere, for example, ciutexc.c
 
 ```C
-#define CIUT_ENABLED    1 /**< user defined, a global macro defined to 1 to active the unit test code */
+// #define CIUT_ENABLED    1 /**< user defined, a global macro defined to 1 to active the unit test code */
 #define CIUT_PLACE_MAIN 1 /**< user defined, a local macro defined to 1 to place main() inside a c file, use once */
 #include <ciut.h>
+
+int main(int argc, char * argv[])
+{
+    return ciut_main(argc, argv);
+}
 ```
 
 It's done.
 See the example files examples/ciutexc.c and examples/test-lang.c.
+
+To compile the test executable, for example, by gcc:
+```bash
+gcc -DCIUT_ENABLED=1 -o ciutexc mytests.c ciutexc.c
+```
 
 To run the executable, you can also specify arguments for it, run help to get more details
 ```bash
@@ -77,3 +88,82 @@ Options:
     -c | -        log to stdout
 ```
 
+
+API Manual
+----------
+
+In this section each API function will be described in detail.
+You may get the project document by:
+```bash
+cd doc && make clean && make
+```
+
+### CIUT_TEST_CASE() or TEST_CASE()
+
+It's a declaration of a test block.
+
+The arguments supported by this macro include:
+* .name: a C string for name of test case
+* .description: a C string description of this test case
+* .skip: if this test should skipped by default. 0 - will be executed by default, 1 - will be skipped by default.
+
+For example:
+```C
+CIUT_TEST_CASE(.name="test title", .description="This is a test.", .skip=1) {
+    CIUT_SECTION("Test section 1") {
+        CIUT_ASSERT(0 == 0);
+    }
+}
+```
+
+### CIUT_SECTION(title) or SECTION(title)
+
+This is a section declaration in a test block, to separate the test codes to multiple sections.
+```C
+CIUT_SECTION("section title") {
+}
+```
+
+### CIUT_ASSERT(condition) or REQUIRE(condition)
+
+It's a assertion for a condition, if it is true, then the test is passed,
+otherwise the test failed.
+```C
+CIUT_ASSERT(0 == 0);
+```
+
+### CIUT_DBL_EQUAL(val1, val2)
+
+This macro is an assertion that two float values are equal in the scale of 1e-15.
+If the difference of values are out of range(>1e-15), then test failed.
+```C
+CIUT_DBL_EQUAL(0.1 + 0.2, 0.3);
+```
+
+### CIUT_LOG()
+
+The is a help function for logging messages.
+```C
+CIUT_LOG("This is a test");
+CIUT_LOG("The values is %d", 1);
+```
+
+### switch CIUT_PLACE_MAIN
+This is a switch for user place the main function in the source code by define it to '1', such as:
+```C
+#define CIUT_PLACE_MAIN 1 /**< user defined, a local macro defined to 1 to place main() inside a c file, use once */
+#include <ciut.h>
+
+int main(int argc, char * argv[])
+{
+    return ciut_main(argc, argv);
+}
+```
+
+### switch CIUT_HANDLE_SIGSEGV
+
+This is a switch for the code test if segmentation fault happen.
+```C
+#define CIUT_HANDLE_SIGSEGV 1
+#include <ciut.h>
+```

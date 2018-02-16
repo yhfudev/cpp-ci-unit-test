@@ -66,13 +66,13 @@ extern FILE * stdlog; //= NULL;
 // log debug: diagnostically
 #define MLD(fmt, ...) fprintf(stdlog, "INFO:"   "[%s()]\t" fmt "\t{%d," __FILE__ "}\n", __func__, ##__VA_ARGS__, __LINE__)
 // log info: general info
-#define MLI(fmt, ...) fprintf(stdlog, "NOTICE:"  fmt, ##__VA_ARGS__)
+#define MLI(fmt, ...) fprintf(stdlog, "NOTICE:"  fmt "\n", ##__VA_ARGS__)
 // log warning: potentially cause problem
-#define MLW(fmt, ...) fprintf(stdlog, "WARNING:" fmt, ##__VA_ARGS__)
+#define MLW(fmt, ...) fprintf(stdlog, "WARNING:" fmt "\n", ##__VA_ARGS__)
 // log error: function error
-#define MLE(fmt, ...) fprintf(stdlog, "ERR:"     fmt, ##__VA_ARGS__)
+#define MLE(fmt, ...) fprintf(stdlog, "ERR:"     fmt "\n", ##__VA_ARGS__)
 // log fatal: cause shutdown of service
-#define MLF(fmt, ...) fprintf(stdlog, "EMERG:"   fmt, ##__VA_ARGS__)
+#define MLF(fmt, ...) fprintf(stdlog, "EMERG:"   fmt "\n", ##__VA_ARGS__)
 // Would you want the message to get a system administrator out of bed in the middle of the night? YES -- fatal, NO -- warning/error, errors need investigation
 //
 // example1: to syslog

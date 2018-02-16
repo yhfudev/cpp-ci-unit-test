@@ -51,7 +51,7 @@ typedef struct _ciut_suite_t {
     int           error_line; /**< the source code file line number of assert error*/
 } ciut_suite_t;
 
-#define _CIUT_FUNCTION_ARGS ciut_suite_t *psuite  /**< the arguments for test case functions */
+#define _CIUT_FUNCTION_ARGS ciut_suite_t *psuite  /* the arguments for test case functions */
 typedef void (* ciut_functions_t)(_CIUT_FUNCTION_ARGS);
 
 #define _CIUT_TC_MAGIC (0xeffcbeef)
@@ -214,7 +214,8 @@ typedef struct _ciut_record_t {
         static _CIUT_FUNC_TITLE(basename)
 
     #define _CIUT_TEST_CASE1_WITH_NAME( ... ) _CIUT_TEST_CASE1_WITH_NAME0( __VA_ARGS__ )
-    #define CIUT_TEST_CASE1(...) _CIUT_TEST_CASE1_WITH_NAME(_CIUT_CREATE_NAME(auto), __VA_ARGS__)
+
+    #define CIUT_TEST_CASE(...) _CIUT_TEST_CASE1_WITH_NAME(_CIUT_CREATE_NAME(auto), __VA_ARGS__)
 
     #define CIUT_TEST_CASE2(basename, ...) _CIUT_TEST_CASE1_WITH_NAME(basename, __VA_ARGS__)
 
@@ -223,6 +224,7 @@ typedef struct _ciut_record_t {
         psuite->cb_log(psuite->fp_log, CIUT_LOG_CASE_ASSERT, "[%s():%d:%s] " fmt "\n", __FUNCTION__, __LINE__, __FILE__,  __VA_ARGS__)
 
     #define CIUT_SECTION(msg) CIUT_LOG ("SECTION: %s", msg);
+
     #define CIUT_ASSERT(a) if(!(a)) { \
         psuite->flg_error = 1; \
         psuite->error_file = __FILE__; \
@@ -542,25 +544,53 @@ typedef struct _ciut_record_t {
         return (psuite->cnt_failed > 0);
     }
 
-    int main(int argc, char * argv[])
-    {
-        return ciut_main(argc, argv);
-    }
     #endif /* CIUT_PLACE_MAIN */
 
 #else
-    #define CIUT_TEST_CASE1(msg)
-    #define CIUT_SECTION(msg)
-    #define CIUT_ASSERT(a) assert(a)
-    #define CIUT_LOG(msg)
+    /**
+     * @brief define a test case block
+     * @param .name: a C string for name of test case
+     * @param .description: a C string description of this test case
+     * @param .skip: if this test should skipped by default. 0 - will be executed by default, 1 - will be skipped by default.
+     *
+     */
+    #define CIUT_TEST_CASE(...)
+
+    /**
+     * @brief seperate a test section
+     * @param title: the title of the section
+     *
+     */
+    #define CIUT_SECTION(title)
+
+    /**
+     * @brief assert a condition
+     * @param condition: the condition expression
+     *
+     */
+    #define CIUT_ASSERT(condition) assert(condition)
+
+    /**
+     * @brief output log
+     * @param fmt: the format string
+     *
+     */
+    #define CIUT_LOG(fmt, ...)
 #endif
 
-#define TEST_CASE               CIUT_TEST_CASE1
+#define TEST_CASE               CIUT_TEST_CASE
 #define SECTION(msg)            CIUT_SECTION(msg)
 #define REQUIRE(a)              CIUT_ASSERT(a)
 
 #define DBL_ERRROR (1e-15)
 #define DBL_CLOSETO(val, target, error) (((target)==0.0)?(fabs((val) - (target)) <= (error)):(fabs(((val) - (target))/(target)) <= (error)))
-#define CIUT_DBL_EQUAL(val, target) REQUIRE(DBL_CLOSETO(val, target, DBL_ERRROR))
+
+/**
+ * @brief if two float values are euqal
+ * @param val1: the first float value
+ * @param val2: another float value
+ *
+ */
+#define CIUT_DBL_EQUAL(val1, val2) REQUIRE(DBL_CLOSETO(val1, val2, DBL_ERRROR))
 
 #endif /* _CI_UNIT_TEST_H */

@@ -11,3 +11,8 @@
 #define CIUT_HANDLE_SIGSEGV 1 /**< user defined in ciut main, set to 0 if you want to dig into where is the segmentation fault by gdb */
 #include <ciut.h>
 
+int main(int argc, char * argv[])
+{
+    return ciut_main(argc, argv);
+}
+
