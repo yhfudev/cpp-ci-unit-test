@@ -1,6 +1,6 @@
 
 AM_LDFLAGS=
-AM_CFLAGS= -std=gnu99
+AM_CFLAGS=
 AM_CPPFLAGS= -DCIUT_ENABLED=1
 EXTRA_DIST=
 
@@ -28,8 +28,9 @@ AM_LDFLAGS += \
 DEFS+= \
     `getconf LFS_CFLAGS` \
     `getconf LFS64_CFLAGS` \
-    -D_GNU_SOURCE \
+    -D_GNU_SOURCE=1 \
     -D_FILE_OFFSET_BITS=64 \
+    -D_LARGEFILE64_SOURCE=1 \
     -DHAVE_MMAP64=1 \
     $(NULL)
 

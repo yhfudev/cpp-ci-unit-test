@@ -9,7 +9,9 @@
 #ifndef _UNI_C_TIME_H
 #define _UNI_C_TIME_H 1
 
-#define _GNU_SOURCE
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE 1
+#endif
 #include <stdio.h>
 #include <string.h>
 #include <syslog.h>
