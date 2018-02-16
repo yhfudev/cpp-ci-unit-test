@@ -48,4 +48,4 @@ script:
   - if [[ ! "$TRAVIS_OS_NAME" == "osx" ]]; then sudo unlink /usr/bin/g++ && sudo ln -s /usr/bin/g++-5 /usr/bin/g++; fi
   - gcc --version
   - g++ --version
-  - ./autogen.sh && ./configure --enable-static --disable-shared --enable-debug CPPFLAGS=-I${TRAVIS_BUILD_DIR} && make && sudo make install && make check
+  - ./autogen.sh && ./configure --enable-static --disable-shared --enable-debug CPPFLAGS=-I${TRAVIS_BUILD_DIR} && make && sudo make install && examples/ciutexcpp - && examples/ciutexc - && make check
