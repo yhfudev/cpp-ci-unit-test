@@ -24,24 +24,27 @@ TEST_CASE( .description="Test the time functions.", .skip=0 ) {
     SECTION("test timeval sub") {
         static struct timeval sub_data[] = {
             {0,   0}, {0,   0}, {0, 0},
-            {0, 500}, {0, 500}, {1, 0},
-            {1, 500}, {0, 500}, {2, 0},
+            {0, 500}, {0, 500}, {0, 0},
+            {1, 500}, {0, 500}, {1, 0},
         };
         size_t i;
         for (i = 0; i < NUM_ARRAY(sub_data); i += 3) {
             struct timeval ret;
             timeval_sub (&(sub_data[i + 0]), &(sub_data[i + 1]), &ret);
+            CIUT_LOG("%d) %d.%06d - %d.%06d = ? %d.%06d", i / 3, sub_data[i + 0].tv_sec, sub_data[i + 0].tv_usec, sub_data[i + 1].tv_sec, sub_data[i + 1].tv_usec, sub_data[i + 2].tv_sec, sub_data[i + 2].tv_usec);
             REQUIRE((sub_data[i + 2].tv_sec == ret.tv_sec) && (sub_data[i + 2].tv_usec == ret.tv_usec));
         }
     }
 }
+
+#define msleep(microseconds) usleep((microseconds) * 1000);
 
 TEST_CASE( .description="Test measure time.", .skip=0 ) {
     SECTION("test measure time") {
         size_t sleeptime = 1000;
         size_t ret_millisecond = 0;
         TMC_BEGIN();
-        usleep(sleeptime);
+        msleep(sleeptime);
         TMC_END(ret_millisecond);
         CIUT_LOG ("sleep milli seconds=%d", ret_millisecond);
         REQUIRE (abs((int)ret_millisecond - (int)sleeptime) <= sleeptime/100);

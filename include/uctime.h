@@ -133,6 +133,7 @@ int timeval_sub(struct timeval * tva, struct timeval * tvb, struct timeval * ret
     gettimeofday (&tmp1, NULL); \
     timeval_sub (&tmp1, &tmc_tmp_starttime, &tmp2); \
     (ret_millisecond) = timeval2millisec(&tmp2); \
+    /*printf("start=%d.%06d; tmp1=%d.%06d; tmp2=%d.%06d; millisec=%d\n", tmc_tmp_starttime.tv_sec, tmc_tmp_starttime.tv_usec, tmp1.tv_sec, tmp1.tv_usec, tmp2.tv_sec, tmp2.tv_usec, (ret_millisecond)); /**/ \
 }}
 #endif
 
