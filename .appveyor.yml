@@ -35,11 +35,11 @@ init:
 install:
   - ps: if (Test-Path Env:\CYG_ROOT) { Start-FileDownload "http://cygwin.com/$env:CYG_SETUP" -FileName "$env:CYG_SETUP" }
   - if defined CYG_ROOT (%CYG_SETUP% --quiet-mode --no-shortcuts --only-site --root "%CYG_ROOT%" --site "%CYG_MIRROR%" --local-package-dir "%CYG_CACHE%" --packages "%CYG_PACKAGES%" --upgrade-also)
-  - if defined MSYSTEM (%BASH% -lc "pacman -Suuy --noconfirm")
+  - if defined MSYSTEM (%BASH% -lc "yes | pacman -Suuy")
   # the following line is not a duplicate line:
   # it is necessary to upgrade the MSYS base files and after that all the packages
   # the 2 separate commands/lines are required because a new shell is necessary for each step
-  - if defined MSYSTEM (%BASH% -lc "pacman -Suuy --noconfirm")
+  - if defined MSYSTEM (%BASH% -lc "yes | pacman -Suuy")
   #
 
 build_script:
