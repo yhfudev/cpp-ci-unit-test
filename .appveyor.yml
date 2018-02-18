@@ -43,7 +43,7 @@ install:
   #
 
 build_script:
-  - if defined BASH (%BASH% -lc "cd $(cygpath ${APPVEYOR_BUILD_FOLDER}) && git submodule update --init && ./autogen.sh && ./configure --enable-static --disable-shared CPPFLAGS=-I$(cygpath ${APPVEYOR_BUILD_FOLDER}) && make DOCUMENT_FOLDER=$(cygpath %DOCUMENT_FOLDER%) install && make check")
+  - if defined BASH (%BASH% -lc "cd $(cygpath ${APPVEYOR_BUILD_FOLDER}) && git submodule update --init && ./autogen.sh && ./configure --enable-static --disable-shared CPPFLAGS=-I$(cygpath ${APPVEYOR_BUILD_FOLDER}) && make DOCUMENT_FOLDER=$(cygpath %DOCUMENT_FOLDER%) install && examples/ciutexcpp - && examples/ciutexc - && make check")
 
 test_script:
   # some argument parse tests
