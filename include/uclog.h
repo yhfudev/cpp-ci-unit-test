@@ -1,10 +1,10 @@
 /**
- * @file    uclog.h
- * @brief   An universal log framework for C and C++
- * @author  Yunhui Fu (yhfudev@gmail.com)
- * @version 1.0
- * @date    2017-12-06
- * @copyright MIT License
+ * \file    uclog.h
+ * \brief   An universal log framework for C and C++
+ * \author  Yunhui Fu (yhfudev@gmail.com)
+ * \version 1.0
+ * \date    2017-12-06
+ * \copyright MIT License
  */
 #ifndef _UNI_C_LOG_H
 #define _UNI_C_LOG_H 1
@@ -117,19 +117,27 @@ extern FILE * stdlog; //= NULL;
 #endif // __cplusplus
 
 // C++ part
-#if __cplusplus
+#ifdef __cplusplus
 #include <ostream>
 
+/**
+ * \brief stream for log
+ * samples:
+ *   std::clog.rdbuf(new Syslog::sbuf("foo", LOG_LOCAL0));
+ *   std::clog << Syslog::Notice << "myprog-E-net-0003 test log message" << std::endl;
+ *   std::clog << "myprog-E-net-0003 the default is debug level" << std::endl;
+ */
 namespace Syslog {
+    /** \brief the priorities of the logs */
     enum Priority {
-        Emergent    = LOG_EMERG,   // system is unusable
-        Alert       = LOG_ALERT,   // action must be taken immediately
-        Critical    = LOG_CRIT,    // critical conditions
-        Error       = LOG_ERR,     // error conditions
-        Warning     = LOG_WARNING, // warning conditions
-        Notice      = LOG_NOTICE,  // normal, but significant, condition
-        Infomation  = LOG_INFO,    // informational message
-        Debug       = LOG_DEBUG,   // debug-level message
+        Emergent    = LOG_EMERG,   ///< system is unusable
+        Alert       = LOG_ALERT,   ///< action must be taken immediately
+        Critical    = LOG_CRIT,    ///< critical conditions
+        Error       = LOG_ERR,     ///< error conditions
+        Warning     = LOG_WARNING, ///< warning conditions
+        Notice      = LOG_NOTICE,  ///< normal, but significant, condition
+        Infomation  = LOG_INFO,    ///< informational message
+        Debug       = LOG_DEBUG,   ///< debug-level message
     };
 
     std::ostream& operator<< (std::ostream& os, const Syslog::Priority& log_priority);
@@ -192,12 +200,6 @@ operator<< (std::ostream& os, const Syslog::Priority& log_priority)
 }
 
 };
-
-/** sample:
-std::clog.rdbuf(new Syslog::sbuf("foo", LOG_LOCAL0));
-std::clog << Syslog::Notice << "myprog-E-net-0003 test log message" << std::endl;
-std::clog << "myprog-E-net-0003 the default is debug level" << std::endl;
-*/
 
 #endif // __cplusplus
 

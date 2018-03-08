@@ -1,10 +1,10 @@
 /**
- * @file    ucport.h
- * @brief   An universal library portable for C and C++
- * @author  Yunhui Fu (yhfudev@gmail.com)
- * @version 1.0
- * @date    2017-12-06
- * @copyright MIT License
+ * \file    ucport.h
+ * \brief   An universal library portable for C and C++
+ * \author  Yunhui Fu (yhfudev@gmail.com)
+ * \version 1.0
+ * \date    2017-12-06
+ * \copyright MIT License
  */
 #ifndef _UNI_C_PORTING_H
 #define _UNI_C_PORTING_H 1

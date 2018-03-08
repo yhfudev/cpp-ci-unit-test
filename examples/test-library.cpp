@@ -1,10 +1,10 @@
 /**
- * @file    test-library.cpp
- * @brief   test code of C++ language for unit test framework
- * @author  Yunhui Fu (yhfudev@gmail.com)
- * @version 1.0
- * @date    2017-12-06
- * @copyright MIT License
+ * \file    test-library.cpp
+ * \brief   test code of C++ language for unit test framework
+ * \author  Yunhui Fu (yhfudev@gmail.com)
+ * \version 1.0
+ * \date    2017-12-06
+ * \copyright MIT License
  */
 #include <stdio.h>
 #include <string.h>
@@ -16,6 +16,7 @@
 
 #if defined(CIUT_ENABLED) && (CIUT_ENABLED == 1)
 #include <ciut.h>
+#include <ciut-sio.h>
 
 #define NUM_ARRAY(a) (sizeof(a)/sizeof((a)[0]))
 

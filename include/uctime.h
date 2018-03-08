@@ -1,10 +1,10 @@
 /**
- * @file    uctime.h
- * @brief   An universal time lib for C and C++
- * @author  Yunhui Fu (yhfudev@gmail.com)
- * @version 1.0
- * @date    2017-12-06
- * @copyright MIT License
+ * \file    uctime.h
+ * \brief   An universal time lib for C and C++
+ * \author  Yunhui Fu (yhfudev@gmail.com)
+ * \version 1.0
+ * \date    2017-12-06
+ * \copyright MIT License
  */
 #ifndef _UNI_C_TIME_H
 #define _UNI_C_TIME_H 1
@@ -80,11 +80,11 @@ gettimeofday (struct timeval *tvp, struct timezone *tzp)
 //extern int timeval_sub (struct timeval *ptv1, struct timeval *ptv2, struct timeval *ptv_ret_1sub2);
 
 /**
- * @brief get the difference between two 'struct timeval'
- * @param tva the timeval to be substracted
- * @param tvb the substract value
- * @param ret the return value
- * @return 0 on success
+ * \brief get the difference between two 'struct timeval'
+ * \param tva the timeval to be substracted
+ * \param tvb the substract value
+ * \param ret the return value
+ * \return 0 on success
  */
 inline
 int timeval_sub(struct timeval * tva, struct timeval * tvb, struct timeval * ret)

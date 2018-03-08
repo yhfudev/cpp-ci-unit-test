@@ -1,10 +1,10 @@
 /**
- * @file    test-lang.c
- * @brief   test code of C language for unit test framework of C
- * @author  Yunhui Fu (yhfudev@gmail.com)
- * @version 1.0
- * @date    2017-03-14
- * @copyright MIT License
+ * \file    test-lang.c
+ * \brief   test code of C language for unit test framework of C
+ * \author  Yunhui Fu (yhfudev@gmail.com)
+ * \version 1.0
+ * \date    2017-03-14
+ * \copyright MIT License
  */
 #include <stdio.h>
 #include <string.h>

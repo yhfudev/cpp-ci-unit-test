@@ -1,10 +1,10 @@
 /**
- * @file    ciut.h
- * @brief   An unit test framework for C and C++
- * @author  Yunhui Fu (yhfudev@gmail.com)
- * @version 1.0
- * @date    2017-03-14
- * @copyright MIT License
+ * \file    ciut.h
+ * \brief   An unit test framework for C and C++
+ * \author  Yunhui Fu (yhfudev@gmail.com)
+ * \version 1.0
+ * \date    2017-03-14
+ * \copyright MIT License
  */
 #ifndef _CI_UNIT_TEST_H
 #define _CI_UNIT_TEST_H 1
@@ -37,7 +37,7 @@
 typedef void (* ciut_cb_log_t)(void *fp, int type, const char *msg, ...);
 
 /**
- * @brief to record the test results
+ * \brief to record the test results
  */
 typedef struct _ciut_suite_t {
     size_t cnt_total;      /**< the total number of tests */
@@ -57,7 +57,7 @@ typedef void (* ciut_functions_t)(_CIUT_FUNCTION_ARGS);
 
 #define _CIUT_TC_MAGIC (0xeffcbeef)
 /**
- * @brief config structure for each test case
+ * \brief config structure for each test case
  */
 typedef struct _ciut_record_t {
     unsigned int magic;
@@ -272,10 +272,10 @@ typedef struct _ciut_record_t {
     }
 
     /**
-     * @brief log the message in xml
-     * @param fp : the FILE pointer
-     * @param type : the log type, one of CIUT_LOG_SUCCESS/FAILED/ASSERT
-     * @param msg : the log message
+     * \brief log the message in xml
+     * \param fp : the FILE pointer
+     * \param type : the log type, one of CIUT_LOG_SUCCESS/FAILED/ASSERT
+     * \param msg : the log message
      *
      */
     inline static void ciut_cb_log_xml(void *fp, int type, const char *msg, ...)
@@ -350,7 +350,7 @@ typedef struct _ciut_record_t {
     }
 
     /**
-     * @brief the filer function
+     * \brief the filer function
      */
     inline static char filter_match (const char *pattern, const char * desc)
     {
@@ -549,31 +549,31 @@ typedef struct _ciut_record_t {
 
 #else
     /**
-     * @brief define a test case block
-     * @param .name: a C string for name of test case
-     * @param .description: a C string description of this test case
-     * @param .skip: if this test should skipped by default. 0 - will be executed by default, 1 - will be skipped by default.
+     * \brief define a test case block
+     * \param .name: a C string for name of test case
+     * \param .description: a C string description of this test case
+     * \param .skip: if this test should skipped by default. 0 - will be executed by default, 1 - will be skipped by default.
      *
      */
     #define CIUT_TEST_CASE(...)
 
     /**
-     * @brief seperate a test section
-     * @param title: the title of the section
+     * \brief seperate a test section
+     * \param title: the title of the section
      *
      */
     #define CIUT_SECTION(title)
 
     /**
-     * @brief assert a condition
-     * @param condition: the condition expression
+     * \brief assert a condition
+     * \param condition: the condition expression
      *
      */
     #define CIUT_ASSERT(condition) assert(condition)
 
     /**
-     * @brief output log
-     * @param fmt: the format string
+     * \brief output log
+     * \param fmt: the format string
      *
      */
     #define CIUT_LOG(fmt, ...)
@@ -587,9 +587,9 @@ typedef struct _ciut_record_t {
 #define DBL_CLOSETO(val, target, error) (((target)==0.0)?(fabs((val) - (target)) <= (error)):(fabs(((val) - (target))/(target)) <= (error)))
 
 /**
- * @brief if two float values are euqal
- * @param val1: the first float value
- * @param val2: another float value
+ * \brief if two float values are euqal
+ * \param val1: the first float value
+ * \param val2: another float value
  *
  */
 #define CIUT_DBL_EQUAL(val1, val2) REQUIRE(DBL_CLOSETO(val1, val2, DBL_ERRROR))
