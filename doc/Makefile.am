@@ -1,3 +1,16 @@
+
+DOC_FILES= \
+    Doxyfile.in \
+    genfooter.tex \
+    genheader.tex \
+    Makefile.am \
+    Makefile.in \
+    $(NULL)
+
+EXTRA_DIST= \
+    $(DOC_FILES) \
+    $(NULL)
+
 if ENABLE_DOXYGEN_DOC
 
 EXTRA_DIST=genfooter.tex genheader.tex

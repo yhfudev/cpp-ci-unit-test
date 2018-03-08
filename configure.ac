@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.60])
-AC_INIT(ciut, 1.0.0, yhfudev@gmail.com)
+AC_INIT(ciut, 1.0.1, yhfudev@gmail.com)
 AC_CONFIG_SRCDIR([include/ciut.h])
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE(-Wall subdir-objects)
@@ -57,8 +57,8 @@ fi
 dnl where to install the doxygen-generated HTML doc
 AC_ARG_WITH(html-docdir,
             [AC_HELP_STRING([--with-html-docdir=DIR],
-                            [where to install the doxyten-generated HTML doc [PREFIX/share/doc/libpf/html]])],
-            [htmldocdir="$withval"], [htmldocdir=\$\{prefix\}/share/doc/libpf/html])
+                            [where to install the doxyten-generated HTML doc [PREFIX/share/doc/ciut/html]])],
+            [htmldocdir="$withval"], [htmldocdir=\$\{prefix\}/share/doc/ciut/html])
 AC_SUBST(htmldocdir)
 AM_CONDITIONAL(ENABLE_DOXYGEN_DOC,test "x$enable_doxygen_doc" = "xyes")
 

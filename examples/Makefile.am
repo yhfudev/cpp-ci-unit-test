@@ -36,8 +36,25 @@ DEFS+= \
 
 DOCUMENT_FOLDER         ?= $(datadir)/doc/@PACKAGE@/
 
+#noinst_PROGRAMS=ciutexc ciutexcpp
 TESTS=ciutexc ciutexcpp
-bin_PROGRAMS=ciutexc ciutexcpp
+check_PROGRAMS=ciutexc ciutexcpp
+#bin_PROGRAMS=ciutexc ciutexcpp
+
+
+# force the autoconf use g++ to link the c program with c++ lib
+dummy.cpp:
+	touch $@
+clean-local-dummy:
+	-rm -rf dummy.cpp
+
+#ciutexc.c:
+#	echo -e "#define CIUT_PLACE_MAIN 1\n#include <ciut.h>\nint main(int argc, char * argv[]) { return ciut_main(argc, argv); }" > $@
+#clean-local-check:
+#	-rm -rf ciutexc.c
+
+clean-local: clean-local-dummy #clean-local-check
+
 
 ciutexc_SOURCES= \
     ciutexc.c \

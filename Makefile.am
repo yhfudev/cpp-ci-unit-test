@@ -6,6 +6,9 @@ SUBDIRS= doc examples
 
 include_HEADERS = \
     $(top_srcdir)/include/ciut.h \
+    $(top_srcdir)/include/uclog.h \
+    $(top_srcdir)/include/ucport.h \
+    $(top_srcdir)/include/uctime.h \
     $(NULL)
 
 
