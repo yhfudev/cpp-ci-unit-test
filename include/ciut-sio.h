@@ -11,8 +11,6 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <sys/wait.h> // wait()
-#include <sys/stat.h> // mkfifo()
 #include <assert.h>
 
 #ifndef EXIT_FAILURE
@@ -27,6 +25,9 @@ extern "C" {
 #define cuit_check_output(...) (0)
 
 #else // WIN32
+#include <sys/wait.h> // wait()
+#include <sys/stat.h> // mkfifo()
+
 //int cuit_check_output(int (* cb_output)(FILE * outf, void * user_arg), void * user_arg, const char * output_expected);
 
 /**
