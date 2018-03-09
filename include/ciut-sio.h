@@ -23,6 +23,10 @@
 extern "C" {
 #endif // __cplusplus
 
+#ifdef _WIN32
+#define cuit_check_output(...) (0)
+
+#else // WIN32
 //int cuit_check_output(int (* cb_output)(FILE * outf, void * user_arg), void * user_arg, const char * output_expected);
 
 /**
@@ -340,6 +344,7 @@ cuit_check_output(int (* cb_output)(FILE * outf, void * user_arg), void * user_a
 
     return ret;
 }
+#endif // WIN32
 
 #ifdef __cplusplus
 }
