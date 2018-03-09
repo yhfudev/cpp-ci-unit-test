@@ -14,8 +14,13 @@
 #endif
 #include <stdio.h>
 #include <string.h>
-#include <syslog.h>
 #include <sys/types.h> // off64_t
+
+#ifdef _WIN32
+#define syslog(...)
+#else
+#include <syslog.h>
+#endif
 
 #ifdef __cplusplus
 extern "C" {
