@@ -23,6 +23,7 @@ extern "C" {
 
 #ifdef _WIN32
 #define syslog(...)
+#define openlog(...)
 #define MYLOG_INIT_2SYSLOG() MYLOG_INIT_2STDERR()
 enum _syslog_error_t {
     LOG_EMERG,
@@ -34,6 +35,7 @@ enum _syslog_error_t {
     LOG_INFO,
     LOG_DEBUG,
 };
+#define LOG_PID 1
 
 #else // WIN32
 #include <syslog.h>

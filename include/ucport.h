@@ -44,7 +44,7 @@ extern "C" {
 #include <inttypes.h> /* for PRIdPTR PRIiPTR PRIoPTR PRIuPTR PRIxPTR PRIXPTR, SCNdPTR SCNiPTR SCNoPTR SCNuPTR SCNxPTR */
 #ifndef PRIuSZ
 #ifdef __WIN32__                /* or whatever */
-#define PRIiSZ "ld"
+#define PRIiSZ "Id"
 #define PRIuSZ "Iu"
 #else
 #define PRIiSZ "zd"
