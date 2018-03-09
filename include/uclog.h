@@ -16,15 +16,27 @@
 #include <string.h>
 #include <sys/types.h> // off64_t
 
-#ifdef _WIN32
-#define syslog(...)
-#else
-#include <syslog.h>
-#endif
-
 #ifdef __cplusplus
 extern "C" {
 #endif // __cplusplus
+
+
+#ifdef _WIN32
+#define syslog(...)
+#define MYLOG_INIT_2SYSLOG() MYLOG_INIT_2STDERR()
+enum _syslog_error_t {
+    LOG_EMERG,
+    LOG_ALERT,
+    LOG_CRIT,
+    LOG_ERR,
+    LOG_WARNING,
+    LOG_NOTICE,
+    LOG_INFO,
+    LOG_DEBUG,
+};
+
+#else // WIN32
+#include <syslog.h>
 
 // redirect stderr to syslog:
 static char const *priov[] = {
@@ -65,10 +77,13 @@ static cookie_io_functions_t log_fns = {
 // fsyslog(&stderr);
 // fprintf(stderr, "ALERT: this is a test alert message!\n");
 
+#define MYLOG_INIT_2SYSLOG() fsyslog(&stdlog)
+#endif // WIN32
+
+#define MYLOG_INIT_2STDERR() stdlog=stderr
+
 extern FILE * stdlog; //= NULL;
 #define MYLOG_GLOBAL_INIT FILE * stdlog = NULL
-#define MYLOG_INIT_2SYSLOG() fsyslog(&stdlog)
-#define MYLOG_INIT_2STDERR() stdlog=stderr
 // log trace: code trace for dev
 #define MLT(fmt, ...) fprintf(stdlog, "DEBUG:"  "[%s()]\t" fmt "\t{%d," __FILE__ "}\n", __func__, ##__VA_ARGS__, __LINE__)
 // log debug: diagnostically
