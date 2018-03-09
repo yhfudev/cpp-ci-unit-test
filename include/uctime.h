@@ -40,7 +40,7 @@ struct timeval
 };
 #endif
 
-#ifndef HAVE_STRUCT_TIMEZONE
+#if 0 //ifndef HAVE_STRUCT_TIMEZONE
 struct timezone
 {
     int tz_minuteswest;         /* minutes west of Greenwich */
