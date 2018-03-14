@@ -20,7 +20,7 @@
 
 #define NUM_ARRAY(a) (sizeof(a)/sizeof((a)[0]))
 
-TEST_CASE( .description="Test the time functions.", .skip=0 ) {
+TEST_CASE( .name="timeval", .description="Test the time functions." ) {
 
     SECTION("test timeval sub") {
         static struct timeval sub_data[] = {
@@ -40,7 +40,7 @@ TEST_CASE( .description="Test the time functions.", .skip=0 ) {
 
 #define msleep(microseconds) usleep((microseconds) * 1000);
 
-TEST_CASE( .description="Test measure time.", .skip=0 ) {
+TEST_CASE( .name="msleep", .description="Test measure time.", .skip=1 ) {
     SECTION("test measure time") {
         size_t sleeptime = 1000;
         size_t ret_millisecond = 0;
@@ -54,7 +54,7 @@ TEST_CASE( .description="Test measure time.", .skip=0 ) {
 
 MYLOG_GLOBAL_INIT;
 
-TEST_CASE( .description="Test log.", .skip=0 ) {
+TEST_CASE( .name="log-MLT", .description="Test log.", .skip=0 ) {
     SECTION("test log") {
         MYLOG_INIT_2STDERR();
         MLT("the network port=%d", 1);
@@ -70,7 +70,7 @@ cb_cuit_check_output_sio (FILE * outf, void * user_arg)
     return 0;
 }
 
-TEST_CASE( .name="ciutsio", .description="Test ciut sio.", .skip=0 ) {
+TEST_CASE( .name="ciutsio", .description="Test ciut sio." ) {
     SECTION("test cuit_check_output") {
 #define CSTR_TEST1 ""
         REQUIRE(0 == cuit_check_output(cb_cuit_check_output_sio, (void *)CSTR_TEST1, CSTR_TEST1));

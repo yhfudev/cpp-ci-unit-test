@@ -11,7 +11,7 @@
 #if defined(CIUT_ENABLED) && (CIUT_ENABLED == 1)
 #include <ciut.h>
 
-TEST_CASE( .description="Test C++ exception.", .skip=1 ) {
+TEST_CASE( .name="cpp-throw", .description="Test C++ exception.", .skip=1 ) {
     SECTION("test func") {
         throw "exception test";
     }

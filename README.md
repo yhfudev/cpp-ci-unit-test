@@ -151,6 +151,7 @@ CIUT_LOG("The values is %d", 1);
 ### switch CIUT_PLACE_MAIN
 This is a switch for user place the main function in the source code by define it to '1', such as:
 ```C
+#define CIUT_HANDLE_SIGSEGV 1 /**< user defined in ciut main, set to 0 if you want to dig into where is the segmentation fault happened using gdb */
 #define CIUT_PLACE_MAIN 1 /**< user defined, a local macro defined to 1 to place main() inside a c file, use once */
 #include <ciut.h>
 
@@ -162,8 +163,6 @@ int main(int argc, char * argv[])
 
 ### switch CIUT_HANDLE_SIGSEGV
 
-This is a switch for the code test if segmentation fault happen.
-```C
-#define CIUT_HANDLE_SIGSEGV 1
-#include <ciut.h>
-```
+This is a switch for the code handle if segmentation fault happen.
+It need to be used with the function ciut_main(), see above example.
+

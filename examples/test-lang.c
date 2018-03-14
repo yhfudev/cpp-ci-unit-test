@@ -14,16 +14,16 @@
 #if defined(CIUT_ENABLED) && (CIUT_ENABLED == 1)
 #include <ciut.h>
 
-TEST_CASE() {
+TEST_CASE( .name="require-micro" ) {
     REQUIRE(0 == 0);
 }
 
-TEST_CASE( .description="Test float point equation.", .skip=0 ) {
+TEST_CASE( .name="float-equation", .description="Test float point equation." ) {
     CIUT_DBL_EQUAL(0.1 + 0.2, 0.3);
     CIUT_DBL_EQUAL(0.0, 0.0 + 0.0);
 }
 
-TEST_CASE( .description="Test the __FUNCTION__ macro.", .skip=0 ) {
+TEST_CASE( .name="function-macro", .description="Test the __FUNCTION__ macro." ) {
     SECTION("test func") {
         CIUT_LOG ("function: %s", __FUNCTION__);
         REQUIRE(0 == strcmp(__FUNCTION__, "ciut_function_auto_2"));
@@ -31,7 +31,7 @@ TEST_CASE( .description="Test the __FUNCTION__ macro.", .skip=0 ) {
 }
 
 #if defined(__COUNTER__)
-TEST_CASE( .description="Test if __COUNTER__ increased.", .skip=0 ) {
+TEST_CASE( .name="counter-micro", .description="Test if __COUNTER__ increased." ) {
     SECTION("test counter") {
         int c;
         c = __COUNTER__;

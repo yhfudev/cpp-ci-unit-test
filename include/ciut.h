@@ -469,17 +469,17 @@ typedef struct _ciut_record_t {
             psuite->flg_error = 0;
             psuite->cb_log(psuite->fp_log, CIUT_LOG_CASE_START, ctc_cur->name);
 
+            if (flg_list) {
+                // list the item
+                fprintf (stdout, "% 3" PRIuSZ ") %s --%s %s\n", psuite->cnt_total, ctc_cur->name, (ctc_cur->skip?" [skip]":""), ctc_cur->description);
+                continue;
+            }
+
             if (((filter == NULL) && ctc_cur->skip) || (0 == filter_match(filter, ctc_cur->name)) ) {
                 psuite->cnt_skipped ++;
                 snprintf(msgbuf, sizeof(msgbuf), "skip %s at (%d:%s)", ctc_cur->name, ctc_cur->line, ctc_cur->file);
                 psuite->cb_log(psuite->fp_log, CIUT_LOG_CASE_ASSERT, msgbuf);
                 psuite->cb_log(psuite->fp_log, CIUT_LOG_CASE_SKIPED, ctc_cur->name);
-                continue;
-            }
-
-            if (flg_list) {
-                // list the item
-                fprintf (stdout, "% 3" PRIuSZ ") %s -- %s\n", psuite->cnt_total, ctc_cur->name, ctc_cur->description);
                 continue;
             }
 

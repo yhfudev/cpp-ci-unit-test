@@ -12,7 +12,7 @@
 #if defined(CIUT_ENABLED) && (CIUT_ENABLED == 1)
 #include <ciut.h>
 
-TEST_CASE( .description="Test SIGSEGV.", .skip=1 ) {
+TEST_CASE( .name="SIGSEGV", .description="Test SIGSEGV.", .skip=1 ) {
     SECTION("test func") {
         char *p = NULL;
         REQUIRE(*p == 1);
