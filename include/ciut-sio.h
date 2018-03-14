@@ -1,8 +1,8 @@
 /**
- * @file    ciut-sio.h
- * @brief   the CIUT functions for checking FILE output
- * @author  Yunhui Fu <yhfudev@gmail.com>
- * @version 1.0
+ * \file    ciut-sio.h
+ * \brief   the CIUT functions for checking FILE output
+ * \author  Yunhui Fu <yhfudev@gmail.com>
+ * \version 1.0
  */
 #ifndef _CIUT_SIO_H
 #define _CIUT_SIO_H 1
@@ -31,11 +31,11 @@ extern "C" {
 //int cuit_check_output(int (* cb_output)(FILE * outf, void * user_arg), void * user_arg, const char * output_expected);
 
 /**
- * @brief Create a anonymous pipe and return the pid and file pointers
- * @param fp_from: the file pointer for writing
- * @param fp_to: the file pointer for reading
+ * \brief Create a anonymous pipe and return the pid and file pointers
+ * \param fp_from: the file pointer for writing
+ * \param fp_to: the file pointer for reading
  *
- * @return pid>=0 on successs, <0 on failed; child pid==0, and should the writing file pointer(fp_from), parent pid>0 and should use the reading file pointer.
+ * \return pid>=0 on successs, <0 on failed; child pid==0, and should the writing file pointer(fp_from), parent pid>0 and should use the reading file pointer.
  *
  */
 static pid_t
@@ -154,11 +154,11 @@ destroy_file_anonpipe(pid_t mypid, FILE * fp_from, FILE * fp_to)
 #define FN_FIFO "myfifo"
 
 /**
- * @brief Create a named pipe and return the pid and file pointers
- * @param fp_from: the file pointer for writing
- * @param fp_to: the file pointer for reading
+ * \brief Create a named pipe and return the pid and file pointers
+ * \param fp_from: the file pointer for writing
+ * \param fp_to: the file pointer for reading
  *
- * @return pid>=0 on successs, <0 on failed; child pid==0, and should the writing file pointer(fp_from), parent pid>0 and should use the reading file pointer.
+ * \return pid>=0 on successs, <0 on failed; child pid==0, and should the writing file pointer(fp_from), parent pid>0 and should use the reading file pointer.
  *
  */
 static pid_t
@@ -275,31 +275,47 @@ static int
 read_and_compare(FILE *fp, const char * expected)
 {
     int ret;
-    char buf_all[1000] = "";
+    char * buf_all = NULL;
     char * buffer = NULL;
     size_t szbuf = 0;
-    szbuf = 1000;
+
+    szbuf = strlen(expected) + 20;
+    if (szbuf < 1000) {
+        szbuf = 1000;
+    }
     buffer = (char *) malloc (szbuf);
     if (NULL == buffer) {
         return -1;
     }
+    buf_all = (char *)malloc(szbuf * 2);
+    if (NULL == buf_all) {
+        free (buffer);
+        return -1;
+    }
+    buf_all[0] = 0;
+
     ret = getline ( &buffer, &szbuf, fp );
     while ( ret > 0 ) {
         strcat(buf_all, buffer);
+        assert (strlen(buf_all) < szbuf * 2);
         ret = getline ( &buffer, &szbuf, fp );
     }
     free (buffer);
-    fprintf(stderr, "[test] recv string:\n%s", buf_all);
 
-    return strcmp(expected, buf_all);
+    fprintf(stderr, "[test] expected string:\n%s", expected);
+    fprintf(stderr, "[test] recv string:\n%s", buf_all);
+    ret = strcmp(expected, buf_all);
+
+    free (buf_all);
+    return ret;
 }
 
 /**
- * @brief check if the output of the function is the same as pre-defined
- * @param cb_output: the callback function to to generate the result and save to a FILE
- * @param user_arg: the input for the callback
- * @param output_expected: the expected generated output of the callback function
- * return 0 on success
+ * \brief check if the output of the function is the same as pre-defined
+ * \param cb_output: the callback function to to generate the result and save to a FILE
+ * \param user_arg: the input for the callback
+ * \param output_expected: the expected generated output of the callback function
+ * \return 0 on success
  */
 static int
 cuit_check_output(int (* cb_output)(FILE * outf, void * user_arg), void * user_arg, const char * output_expected)
