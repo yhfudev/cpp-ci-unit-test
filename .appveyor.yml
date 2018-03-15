@@ -47,26 +47,3 @@ install:
 build_script:
   - if defined BASH (%BASH% -lc "cd $(cygpath ${APPVEYOR_BUILD_FOLDER}) && git submodule update --init && ./autogen.sh && ./configure --enable-static --disable-shared CPPFLAGS=-I$(cygpath ${APPVEYOR_BUILD_FOLDER}) && make DOCUMENT_FOLDER=$(cygpath %DOCUMENT_FOLDER%) install && make check && examples/ciutexcpp - && examples/ciutexc -")
 
-test_script:
-  # some argument parse tests
-  #  1. non-supported operator and therefore the test exec should complain (if it does not there might be a problem)
-  #  2. normal arguments and succeed
-  - ps: >-
-      if (Test-Path Env:\MSYSTEM)
-      {
-        mkdir $env:KERNEL_CACHE 2>&1 | out-null
-      }
-
-      & $env:BASH -lc "examples/ciutexcpp -a 2>&1" 2>&1 | out-null
-
-      if ($LastExitCode -eq 0)
-      {
-        throw "test failed. exit code 1: $LastExitCode"
-      }
-
-      & $env:BASH -lc "examples/ciutexcpp -x test.xml 2>&1" 2>&1 | out-null
-
-      if ($LastExitCode -eq 0)
-      {
-        throw "test failed. exit code 2: $LastExitCode"
-      }
