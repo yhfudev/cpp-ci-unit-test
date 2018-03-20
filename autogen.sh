@@ -33,7 +33,7 @@ autoreconf -f -i -Wall,no-obsolete
 
 #./configure
 
-./configure --enable-debug
+./configure --enable-debug --enable-coverage
 
 #make clean
 #make ChangeLog

@@ -62,6 +62,36 @@ AC_ARG_WITH(html-docdir,
 AC_SUBST(htmldocdir)
 AM_CONDITIONAL(ENABLE_DOXYGEN_DOC,test "x$enable_doxygen_doc" = "xyes")
 
+
+# coverage
+AC_ARG_ENABLE([coverage],
+    AS_HELP_STRING([--enable-coverage],[Enable lcov coverage report generation (default: disabled)]),
+    [enable_coverage=$enableval],
+    [enable_coverage=no])
+if test "x$enable_coverage" = "xyes"; then
+    AC_PATH_PROG([LCOV], [lcov], [], [$PATH:/bin:/usr/bin:/usr/local/bin])
+    if test x$LCOV = x; then
+        AC_MSG_ERROR([lcov not found])
+    fi
+    AC_PATH_PROG([GENHTML], [genhtml], [], [$PATH:/bin:/usr/bin:/usr/local/bin])
+    if test x$GENHTML = x; then
+        AC_MSG_ERROR([genhtml not found])
+    fi
+
+    COVERAGE_CFLAGS="-fprofile-arcs -ftest-coverage"
+    COVERAGE_LDFLAGS="-fprofile-arcs"
+    AC_SUBST(COVERAGE_CFLAGS)
+    AC_SUBST(COVERAGE_LDFLAGS)
+
+    CPPFLAGS="${COVERAGE_CFLAGS} ${CPPFLAGS}"
+    LDFLAGS="${COVERAGE_LDFLAGS} ${LDFLAGS}"
+
+    AC_MSG_NOTICE([coverage enabled, adding "-g -O0" to CFLAGS])
+    CFLAGS="${CFLAGS} -g -O0"
+fi
+AM_CONDITIONAL([COVERAGE], [test x$enable_coverage = xyes])
+
+
 # Checks for header files.
 AC_CHECK_HEADERS([stddef.h string.h])
 

@@ -50,3 +50,7 @@ script:
   - g++ --version
   - ./autogen.sh && ./configure --enable-static --disable-shared --enable-debug CPPFLAGS=-I${TRAVIS_BUILD_DIR} && make && sudo make install && make check && examples/ciutexcpp - && examples/ciutexc -
 
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
+
+

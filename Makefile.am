@@ -49,3 +49,35 @@ ChangeLog: .git
         touch $(srcdir)/.last-cl-gen;                       \
     fi
 
+
+if COVERAGE
+cov-reset-common:
+	@rm -rf $(top_builddir)/coverage
+	@find $(top_builddir)/examples -name "*.gcda" -delete
+
+cov-reset: cov-reset-common
+	@lcov --zerocounters --directory $(top_builddir)
+
+cov-report:
+	@mkdir $(top_builddir)/coverage
+	lcov -c -o $(top_builddir)/coverage/coverage.info -d $(top_builddir) \
+		 --rc lcov_branch_coverage=1
+	lcov -r $(top_builddir)/coverage/coverage.info '*/tests/*' '*/suites/*' '/usr*' \
+		 -o $(abs_top_builddir)/coverage/coverage.cleaned.info \
+		 --rc lcov_branch_coverage=1
+	genhtml --num-spaces 4 --legend --branch-coverage --ignore-errors source \
+			-t "$(PACKAGE_STRING)" \
+			-o $(top_builddir)/coverage/html \
+			-p `readlink -m $(abs_top_srcdir)`/src \
+			$(top_builddir)/coverage/coverage.cleaned.info
+	@echo "Coverage Report at $(top_builddir)/coverage/html" >&2
+
+coverage:
+	@$(MAKE) cov-reset
+	@$(MAKE) check
+	@$(MAKE) cov-report
+else
+coverage:
+	@echo "reconfigure with --enable-coverage"
+endif
+
