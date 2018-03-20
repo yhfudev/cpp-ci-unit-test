@@ -31,9 +31,8 @@ autoconf
 autoreconf -f -i -Wall,no-obsolete
 autoreconf -f -i -Wall,no-obsolete
 
-#./configure
-
-./configure --enable-debug --enable-coverage
+#./configure --enable-debug --enable-coverage
+./configure --enable-debug
 
 #make clean
 #make ChangeLog
