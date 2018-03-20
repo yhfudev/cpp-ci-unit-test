@@ -9,6 +9,12 @@ before_install:
       - curl -sSL https://rvm.io/mpapis.asc | gpg --import - && rvm get head
       - if [[ ! "$TRAVIS_OS_NAME" == "osx" ]]; then echo -n | openssl s_client -connect scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-certificates.crt ; fi
 
+  # Install lcov 1.11
+  - wget http://downloads.sourceforge.net/ltp/lcov-1.13.tar.gz
+  - tar -xvf lcov-1.13.tar.gz
+  - cd lcov-1.13 && sudo make install
+  - cd ..
+
 addons:
   coverity_scan:
     project:
