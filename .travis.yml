@@ -197,9 +197,9 @@ script:
   - if [[ ! "$TRAVIS_OS_NAME" == "osx" ]]; then CC=${CC} CXX=${CXX} ./configure --enable-coverage --enable-valgrind CPPFLAGS=-I${TRAVIS_BUILD_DIR} ; else CC=${CC} CXX=${CXX} ./configure --disable-coverage --disable-valgrind CPPFLAGS=-I${TRAVIS_BUILD_DIR} ; fi
   - make -j 8 CC=${CC} CXX=${CXX}
   - sudo make install CC=${CC} CXX=${CXX}
-  - make check CC=${CC} CXX=${CXX}
   - if [[ ! "$TRAVIS_OS_NAME" == "osx" ]]; then make clean; make check-valgrind CC=${CC} CXX=${CXX} ; fi
   - if [[ ! "$TRAVIS_OS_NAME" == "osx" ]]; then make clean; make coverage CC=${CC} CXX=${CXX} ; fi
+  - make clean && make check CC=${CC} CXX=${CXX}
   - examples/ciutexcpp
   - examples/ciutexc
 
