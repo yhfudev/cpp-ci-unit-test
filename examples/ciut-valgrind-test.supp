@@ -1,2 +1,8 @@
-# this file is blank
+{
+   remove-error-namepipe
+   drd:MutexErr
+   fun:pthread_mutex_init
+   fun:__gcov_fork
+   fun:create_file_namepipe
+}
 

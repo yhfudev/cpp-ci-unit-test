@@ -34,7 +34,10 @@ autoreconf -f -i -Wall,no-obsolete
 if [ 1 = 1 ]; then
 ./configure --disable-debug
 else
-./configure --enable-debug --enable-coverage --enable-valgrind
+which "$CC" || CC=gcc
+which "$CXX" || CXX=g++
+CC=$CC CXX=$CXX ./configure --enable-debug --enable-coverage --enable-valgrind
+make clean; make coverage CC=$CC CXX=$CXX; make check-valgrind CC=$CC CXX=$CXX
 fi
 
 #make clean

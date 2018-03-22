@@ -203,6 +203,8 @@ script:
   - if [[ ! "$TRAVIS_OS_NAME" == "osx" ]]; then if [ -x /usr/bin/g++-5 ]; then sudo unlink /usr/bin/g++ && sudo ln -s /usr/bin/g++-5 /usr/bin/g++; fi; fi
   - gcc --version
   - g++ --version
+  - which "$CC" || CC=gcc
+  - which "$CXX" || CXX=g++
   - echo "CC=$CC; CXX=$CXX"
   - ./autogen.sh
   - if [[ ! "$TRAVIS_OS_NAME" == "osx" ]]; then CC=${CC} CXX=${CXX} ./configure --enable-coverage --enable-valgrind CPPFLAGS=-I${TRAVIS_BUILD_DIR} ; else CC=${CC} CXX=${CXX} ./configure --disable-coverage --disable-valgrind CPPFLAGS=-I${TRAVIS_BUILD_DIR} ; fi

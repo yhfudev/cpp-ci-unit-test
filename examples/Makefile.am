@@ -42,6 +42,7 @@ check_PROGRAMS=ciutexc ciutexcpp
 #bin_PROGRAMS=ciutexc ciutexcpp
 
 # add "VALGRIND = valgrind --gen-suppressions=all" in your makefile to get the content of .supp
+# default valgrind supp file: /usr/lib/valgrind/default.supp
 @VALGRIND_CHECK_RULES@
 VALGRIND_SUPPRESSIONS_FILES = ciut-valgrind-test.supp
 EXTRA_DIST += ciut-valgrind-test.supp
