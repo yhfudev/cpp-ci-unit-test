@@ -205,7 +205,7 @@ script:
   - g++ --version
   - echo "origin CC=$CC; CXX=$CXX"
   - which "$CC" || CC=gcc
-  - if [[ $CC =~ .*clang.* ]]; then CXX=clang++; else CXX=g++; fi
+  - which "$CXX" || if [[ $CC =~ .*clang.* ]]; then CXX=clang++; else CXX=g++; fi
   - echo "CC=$CC; CXX=$CXX"
   - ./autogen.sh
   - if [[ ! "$TRAVIS_OS_NAME" == "osx" ]]; then CC=${CC} CXX=${CXX} ./configure --enable-coverage --enable-valgrind CPPFLAGS=-I${TRAVIS_BUILD_DIR} ; else CC=${CC} CXX=${CXX} ./configure --disable-coverage --disable-valgrind CPPFLAGS=-I${TRAVIS_BUILD_DIR} ; fi
