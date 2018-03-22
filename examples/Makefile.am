@@ -41,6 +41,12 @@ TESTS=ciutexc ciutexcpp
 check_PROGRAMS=ciutexc ciutexcpp
 #bin_PROGRAMS=ciutexc ciutexcpp
 
+@VALGRIND_CHECK_RULES@
+VALGRIND_SUPPRESSIONS_FILES = ciut-valgrind-test.supp
+EXTRA_DIST += ciut-valgrind-test.supp
+
+ciut-valgrind-test.supp:
+	touch $@
 
 # force the autoconf use g++ to link the c program with c++ lib
 dummy.cpp:

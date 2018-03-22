@@ -45,5 +45,5 @@ install:
   - if defined MSYSTEM (%BASH% -lc "if [ -d /mingw32 ]; then ln -s /usr/lib/libdl.a /mingw32/lib; fi; if [ -d /mingw64 ]; then ln -s /usr/lib/libdl.a /mingw64/lib; fi")
 
 build_script:
-  - if defined BASH (%BASH% -lc "cd $(cygpath ${APPVEYOR_BUILD_FOLDER}) && git submodule update --init && ./autogen.sh && ./configure --enable-static --disable-shared CPPFLAGS=-I$(cygpath ${APPVEYOR_BUILD_FOLDER}) && make DOCUMENT_FOLDER=$(cygpath %DOCUMENT_FOLDER%) install && make check && examples/ciutexcpp - && examples/ciutexc -")
+  - if defined BASH (%BASH% -lc "cd $(cygpath ${APPVEYOR_BUILD_FOLDER}) && git submodule update --init && ./autogen.sh && ./configure --enable-static --disable-shared --disable-coverage --disable-valgrind CPPFLAGS=-I$(cygpath ${APPVEYOR_BUILD_FOLDER}) && make DOCUMENT_FOLDER=$(cygpath %DOCUMENT_FOLDER%) install && make check && examples/ciutexcpp - && examples/ciutexc -")
 

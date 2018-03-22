@@ -5,7 +5,10 @@ AC_PREREQ([2.60])
 AC_INIT(ciut, 1.0.1, yhfudev@gmail.com)
 AC_CONFIG_SRCDIR([include/ciut.h])
 AC_CONFIG_HEADERS([config.h])
-AM_INIT_AUTOMAKE(-Wall subdir-objects)
+AM_INIT_AUTOMAKE(-Wall subdir-objects parallel-tests color-tests)
+
+# Specify the directory of additional local Autoconf macros.
+AC_CONFIG_MACRO_DIR([m4])
 
 #magic for conditional check in Makefile:
 MK=''; AC_SUBST(MK)
@@ -20,28 +23,96 @@ AC_PROG_MAKE_SET
 
 # Checks for libraries.
 
+AX_VALGRIND_DFLT([sgcheck], [off])
+AX_VALGRIND_CHECK
+
 # debug
 AC_ARG_ENABLE([debug],
 	AS_HELP_STRING([--enable-debug],[Compile the debug version (default: disabled)]),
 	[enable_debug=$enableval],
 	[enable_debug=no])
 AM_CONDITIONAL([DEBUG], [test $enable_debug = "yes"])
-AM_COND_IF(DEBUG,
-    AC_DEFINE(DEBUG, 1, [Define to 0 if this is a release build]),
-    AC_DEFINE(DEBUG, 0, [Define to 1 or higher if this is a debug build]))
-if test "x$enable_debug" = "xyes"; then
+
+# coverage
+AC_ARG_ENABLE([coverage],
+    AS_HELP_STRING([--enable-coverage],[Enable lcov coverage report generation (default: disabled)]),
+    [enable_coverage=$enableval],
+    [enable_coverage=no])
+if test "x$enable_coverage" = "xyes"; then
+    AC_PATH_PROG([LCOV], [lcov], [], [$PATH:/bin:/usr/bin:/usr/local/bin])
+    if test x$LCOV = x; then
+        AC_MSG_ERROR([lcov not found])
+    fi
+    AC_PATH_PROG([GENHTML], [genhtml], [], [$PATH:/bin:/usr/bin:/usr/local/bin])
+    if test x$GENHTML = x; then
+        AC_MSG_ERROR([genhtml not found])
+    fi
+
+    COVERAGE_CFLAGS=
+    COVERAGE_LDFLAGS=
+
+    # llvm native coverage mode:
+    #AS_CASE([${CC}], [*clang*],
+    #  [AX_CHECK_COMPILE_FLAG([-fprofile-instr-generate],
+    #  [COVERAGE_CFLAGS="$COVERAGE_CFLAGS -fprofile-instr-generate"])])
+    #AS_CASE([${CC}], [*clang*],
+    #  [AX_CHECK_COMPILE_FLAG([-fcoverage-mapping],
+    #  [COVERAGE_CFLAGS="$COVERAGE_CFLAGS -fcoverage-mapping"])])
+
+    # gcov or llvm compabililty coverage mode:
+    AS_CASE([${CC}], [*],
+      [AX_CHECK_COMPILE_FLAG([-fprofile-arcs],
+      [COVERAGE_CFLAGS="$COVERAGE_CFLAGS -fprofile-arcs"])])
+    AS_CASE([${CC}], [*],
+      [AX_CHECK_COMPILE_FLAG([-ftest-coverage],
+      [COVERAGE_CFLAGS="$COVERAGE_CFLAGS -ftest-coverage"])])
+    AS_CASE([${CC}], [*],
+      [AX_CHECK_COMPILE_FLAG([--coverage],
+      [COVERAGE_CFLAGS="$COVERAGE_CFLAGS --coverage"])])
+
+    AS_CASE([${CC}], [*],
+      [AX_CHECK_LINK_FLAG([-fprofile-arcs],
+      [COVERAGE_LDFLAGS="$COVERAGE_LDFLAGS -fprofile-arcs"])])
+    AS_CASE([${CC}], [*],
+      [AX_CHECK_LINK_FLAG([-ftest-coverage],
+      [COVERAGE_LDFLAGS="$COVERAGE_LDFLAGS -ftest-coverage"])])
+    AS_CASE([${CC}], [*],
+      [AX_CHECK_LINK_FLAG([--coverage],
+      [COVERAGE_LDFLAGS="$COVERAGE_LDFLAGS --coverage"])])
+
+    AC_SUBST(COVERAGE_CFLAGS)
+    AC_SUBST(COVERAGE_LDFLAGS)
+
+    CPPFLAGS="${COVERAGE_CFLAGS} ${CPPFLAGS}"
+    LDFLAGS="${COVERAGE_LDFLAGS} ${LDFLAGS}"
+
+    AC_MSG_NOTICE([coverage enabled, adding "-g -O0" to CFLAGS])
+    #CFLAGS="${CFLAGS} -g -O0"
+    enable_debug=yes
+    AC_SUBST(enable_debug)
+fi
+AM_CONDITIONAL([COVERAGE], [test x$enable_coverage = xyes])
+
+if test "x$enable_debug" = "xyes"  || "x$enable_coverage" = "xyes" ; then
   changequote({,})
   CFLAGS=`echo "$CFLAGS" | $SED -e 's/-O[0-9s]*//g'`
   CXXFLAGS=`echo "$CXXFLAGS" | $SED -e 's/-O[0-9s]*//g'`
-  CFLAGS=`echo "$CFLAGS" | $SED -e 's/-g//g'`
-  CXXFLAGS=`echo "$CXXFLAGS" | $SED -e 's/-g//g'`
+  CPPFLAGS=`echo "$CPPFLAGS" | $SED -e 's/-O[0-9s]*//g'`
+  LDFLAGS=`echo "$LDFLAGS" | $SED -e 's/-O[0-9s]*//g'`
+  CFLAGS=`echo "$CFLAGS" | $SED -e 's/ -g //g'`
+  CXXFLAGS=`echo "$CXXFLAGS" | $SED -e 's/ -g //g'`
+  CPPFLAGS=`echo "$CPPFLAGS" | $SED -e 's/ -g //g'`
+  LDFLAGS=`echo "$LDFLAGS" | $SED -e 's/ -g //g'`
   changequote([,])
   dnl add -O0 only if GCC or ICC is used
   if test "$GCC" = "yes" || test "$ICC" = "yes"; then
-    CFLAGS="$CFLAGS -O0"
-    CXXFLAGS="$CXXFLAGS -O0"
+    CFLAGS="$CFLAGS -g -O0 -Wall"
+    CXXFLAGS="$CXXFLAGS -g -O0 -Wall"
+    CPPFLAGS="$CPPFLAGS -g -O0 -Wall"
+    #LDFLAGS="$LDFLAGS -g -O0 -Wall"
   fi
 fi
+
 
 dnl Disable doc generation with doxygen option
 AC_ARG_ENABLE(doxygen-doc,
@@ -61,35 +132,6 @@ AC_ARG_WITH(html-docdir,
             [htmldocdir="$withval"], [htmldocdir=\$\{prefix\}/share/doc/ciut/html])
 AC_SUBST(htmldocdir)
 AM_CONDITIONAL(ENABLE_DOXYGEN_DOC,test "x$enable_doxygen_doc" = "xyes")
-
-
-# coverage
-AC_ARG_ENABLE([coverage],
-    AS_HELP_STRING([--enable-coverage],[Enable lcov coverage report generation (default: disabled)]),
-    [enable_coverage=$enableval],
-    [enable_coverage=no])
-if test "x$enable_coverage" = "xyes"; then
-    AC_PATH_PROG([LCOV], [lcov], [], [$PATH:/bin:/usr/bin:/usr/local/bin])
-    if test x$LCOV = x; then
-        AC_MSG_ERROR([lcov not found])
-    fi
-    AC_PATH_PROG([GENHTML], [genhtml], [], [$PATH:/bin:/usr/bin:/usr/local/bin])
-    if test x$GENHTML = x; then
-        AC_MSG_ERROR([genhtml not found])
-    fi
-
-    COVERAGE_CFLAGS="-fprofile-arcs -ftest-coverage"
-    COVERAGE_LDFLAGS="-fprofile-arcs"
-    AC_SUBST(COVERAGE_CFLAGS)
-    AC_SUBST(COVERAGE_LDFLAGS)
-
-    CPPFLAGS="${COVERAGE_CFLAGS} ${CPPFLAGS}"
-    LDFLAGS="${COVERAGE_LDFLAGS} ${LDFLAGS}"
-
-    AC_MSG_NOTICE([coverage enabled, adding "-g -O0" to CFLAGS])
-    CFLAGS="${CFLAGS} -g -O0"
-fi
-AM_CONDITIONAL([COVERAGE], [test x$enable_coverage = xyes])
 
 
 # Checks for header files.

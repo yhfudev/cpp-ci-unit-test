@@ -172,11 +172,9 @@ create_file_namepipe (FILE ** fp_from, FILE ** fp_to)
     assert (NULL != fp_from);
     assert (NULL != fp_to);
 
+    //unlink(FN_FIFO);
     fprintf(stderr, "create name pipe '%s' ...\n", FN_FIFO);
-    if (mkfifo(FN_FIFO, S_IRWXU) != 0) {
-        fprintf(stderr, "Unable to create a fifo; errno=%d\n", errno);
-        return -1;
-    }
+    mkfifo(FN_FIFO, S_IRWXU);
 
     if ((pid = fork()) < 0) {
         perror("fork failed");

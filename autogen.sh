@@ -31,8 +31,11 @@ autoconf
 autoreconf -f -i -Wall,no-obsolete
 autoreconf -f -i -Wall,no-obsolete
 
-#./configure --enable-debug --enable-coverage
-./configure --enable-debug
+if [ 1 = 1 ]; then
+./configure --disable-debug
+else
+./configure --enable-debug --enable-coverage --enable-valgrind
+fi
 
 #make clean
 #make ChangeLog

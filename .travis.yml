@@ -6,13 +6,21 @@ env:
    - secure: "W/AGSYXP8DVdAP5ngV6s+lcTGyIax4P+FuGesSq8ogHXKMWu3KSC8AO0mTRoe3cW4mo6wFcv4n2CaQp72qP9Npw3BFkraSmxa7WplD6dlGdhyiwLcodw6S4Rl4fgw9ydPIWlA5zzaSRz/G/okWDXlAMaNnt/EGX3KNqNJG3b4dKdkDc7nqRZuUWUqQZL0mlsJaox9zDl/JJ0Eulr6l4zQcbXkcfhIGb9jmMSRLqfWCV1SrqBbCvocpBSTentlbEYK+Z0KIGDsV2ZkdFwLBqZ+OPYziRTeN2nIQlkRhze/xt1ggapgI2MPDbXbj+JSoMKNCXphxDn12ZmhLkJo+2sHzmUacu/a+0yavxh8IpC0JdHOCVt8wm9Oa9/e6ApVbqjt17GOxbiHDopdbpKbWa34/rUh6SXmrZzIQp4XErYy+Z+hDfcXgqlSB7LbGgA4dZt/qbq5v/yGdpvnjWklff43uEPtqBnBmYOzKFmvvq3jq9BUKiW/oPcay6NnTRqb0EW7crFBr/wiO19b7OEFrieTJgcPpzc+CBfnzLw5//ct+lBrKypQjxYlf+tUV/a5MjbrVEWFG+1qEdWAzLRMgWxkSMUduxFnBo8yIGyebKeGxqodHZ+HMMnAZOAz7KxAkON3GnwlBtL22bulRP85DVCE1rgGPnuHCazw3LFxJH17As="
 
 before_install:
-      - curl -sSL https://rvm.io/mpapis.asc | gpg --import - && rvm get head
-      - if [[ ! "$TRAVIS_OS_NAME" == "osx" ]]; then echo -n | openssl s_client -connect scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-certificates.crt ; fi
-      # Install lcov 1.11
-      - wget http://downloads.sourceforge.net/ltp/lcov-1.13.tar.gz
-      - tar -xvf lcov-1.13.tar.gz
-      - cd lcov-1.13 && sudo make install
-      - cd ..
+  #- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update          ; fi
+  #- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew outdated ; brew upgrade ; fi
+  #- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then which gpg || brew install gpg ; fi
+  #- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; brew install lcov ; fi
+  #- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then which llvm-cov || brew install --with-toolchain llvm ; brew info llvm ; fi
+  #- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew --env           ; fi
+  #- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew doctor          ; fi
+  - if [[ ! "$TRAVIS_OS_NAME" == "osx" ]]; then curl -sSL https://rvm.io/mpapis.asc | gpg --import - && rvm get head ; fi
+  - if [[ ! "$TRAVIS_OS_NAME" == "osx" ]]; then echo -n | openssl s_client -connect scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-certificates.crt ; fi
+  # Install lcov 1.11
+  - wget http://downloads.sourceforge.net/ltp/lcov-1.13.tar.gz
+  - tar -xvf lcov-1.13.tar.gz
+  - cd lcov-1.13 && make && sudo make install
+  - cd ..
+  - lcov --version
 
 addons:
   coverity_scan:
@@ -21,7 +29,7 @@ addons:
       version: $TRAVIS_COMMIT
       description: "Build submitted via Travis CI"
     notification_email: yhfudev@gmail.com
-    build_command_prepend: "./autogen.sh && ./configure --enable-static --disable-shared --enable-debug CPPFLAGS=-I${TRAVIS_BUILD_DIR} && make clean"
+    build_command_prepend: "./autogen.sh"
     build_command:   make -k
     branch_pattern: coverity_scan
   apt:
@@ -39,23 +47,163 @@ language: c
 compiler:
   - clang
   - gcc
+
 matrix:
   include:
+    ### GCC on Linux
+    # works on Precise and Trusty
     - os: linux
-      dist: trusty
-      compiler: gcc
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-4.9
+      env:
+         - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
+
+    # works on Precise and Trusty
     - os: linux
-      dist: trusty
-      compiler: clang
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-5
+      env:
+         - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
+
+    # works on Precise and Trusty
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-6
+      env:
+        - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
+
+    # works on Precise and Trusty
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-7
+      env:
+        - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
+
+    ### Clang
+    # works on Precise and Trusty
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.6
+          packages:
+            - clang-3.6
+      env:
+        - MATRIX_EVAL="CC=clang-3.6 && CXX=clang++-3.6"
+
+    # works on Precise and Trusty
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.7
+          packages:
+            - clang-3.7
+      env:
+        - MATRIX_EVAL="CC=clang-3.7 && CXX=clang++-3.7"
+
+    # works on Precise and Trusty
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.8
+          packages:
+            - clang-3.8
+      env:
+        - MATRIX_EVAL="CC=clang-3.8 && CXX=clang++-3.8"
+
+    # works on Trusty
+# clang-3.9 have problem in coverage: "unrecognized relocation (0x2a) in section `.text.llvm_gcda_start_file'"
+#    - os: linux
+#      addons:
+#        apt:
+#          sources:
+#            - llvm-toolchain-trusty-3.9
+#          packages:
+#            - clang-3.9
+#      env:
+#        - MATRIX_EVAL="CC=clang-3.9 && CXX=clang++-3.9"
+
+    # works on Trusty
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - llvm-toolchain-trusty-4.0
+          packages:
+            - clang-4.0
+      env:
+        - MATRIX_EVAL="CC=clang-4.0 && CXX=clang++-4.0"
+
+    # works on Trusty
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - llvm-toolchain-trusty-5.0
+          packages:
+            - clang-5.0
+      env:
+        - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0"
+
+    ### GCC on OS X
+    - os: osx
+      osx_image: xcode8
+      env:
+        - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
+
+    - os: osx
+      osx_image: xcode8
+      env:
+        - MATRIX_EVAL="brew install gcc5 && CC=gcc-5 && CXX=g++-5"
+
+    - os: osx
+      osx_image: xcode8
+      env:
+        - MATRIX_EVAL="brew install gcc6 && CC=gcc-6 && CXX=g++-6"
+
+    - os: osx
+      osx_image: xcode8
+      env:
+        - MATRIX_EVAL="brew install gcc && CC=gcc-7 && CXX=g++-7"
 
 script:
   - if [[ ! "$TRAVIS_OS_NAME" == "osx" ]]; then if [ -x /usr/bin/gcc-5 ]; then sudo unlink /usr/bin/gcc && sudo ln -s /usr/bin/gcc-5 /usr/bin/gcc; fi; fi
   - if [[ ! "$TRAVIS_OS_NAME" == "osx" ]]; then if [ -x /usr/bin/g++-5 ]; then sudo unlink /usr/bin/g++ && sudo ln -s /usr/bin/g++-5 /usr/bin/g++; fi; fi
   - gcc --version
   - g++ --version
-  - ./autogen.sh && ./configure --enable-static --disable-shared --enable-debug --enable-coverage CPPFLAGS=-I${TRAVIS_BUILD_DIR} && make && sudo make install && make check && examples/ciutexcpp - && examples/ciutexc -
+  - echo "CC=$CC; CXX=$CXX"
+  - ./autogen.sh
+  - if [[ ! "$TRAVIS_OS_NAME" == "osx" ]]; then CC=${CC} CXX=${CXX} ./configure --enable-coverage --enable-valgrind CPPFLAGS=-I${TRAVIS_BUILD_DIR} ; else CC=${CC} CXX=${CXX} ./configure --disable-coverage --disable-valgrind CPPFLAGS=-I${TRAVIS_BUILD_DIR} ; fi
+  - make -j 8 CC=${CC} CXX=${CXX}
+  - sudo make install CC=${CC} CXX=${CXX}
+  - make check CC=${CC} CXX=${CXX}
+  - if [[ ! "$TRAVIS_OS_NAME" == "osx" ]]; then make clean; make check-valgrind CC=${CC} CXX=${CXX} ; fi
+  - if [[ ! "$TRAVIS_OS_NAME" == "osx" ]]; then make clean; make coverage CC=${CC} CXX=${CXX} ; fi
+  - examples/ciutexcpp
+  - examples/ciutexc
 
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
+  - if [[ ! "$TRAVIS_OS_NAME" == "osx" ]]; then bash <(curl -s https://codecov.io/bash) ; fi
 
 
