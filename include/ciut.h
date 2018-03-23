@@ -602,7 +602,7 @@ typedef struct _ciut_record_t {
 /* test cases for main */
 #if defined(CIUT_PLACE_MAIN) && (CIUT_PLACE_MAIN == 1)
 
-TEST_CASE( .description="cuit test callback functions.", .skip=1 ) {
+TEST_CASE( .description="cuit test callback functions.", .skip=0 ) {
     SECTION("test parameters 1") {
         ciut_cb_log_plaintext(stderr, CIUT_LOG_CASE_SUCCESS, "");
         ciut_cb_log_plaintext(stderr, CIUT_LOG_CASE_SKIPED, "");
@@ -624,7 +624,7 @@ TEST_CASE( .description="cuit test callback functions.", .skip=1 ) {
     }
 }
 
-CIUT_TEST_CASE( .description="cuit test misc func.", .skip=1 ) {
+CIUT_TEST_CASE( .description="cuit test misc func.", .skip=0 ) {
     CIUT_SECTION("test parameters 1") {
         usage("");
 

@@ -85,7 +85,7 @@ TEST_CASE( .name="ciutsio", .description="Test ciut sio.", .skip=0 ) {
     }
 }
 
-#if ! (defined(_WIN32) || defined(__CYGWIN__) || defined(__APPLE__))
+#if 0 // ! (defined(_WIN32) || defined(__CYGWIN__) || defined(__APPLE__))
 // test uclog.h
 TEST_CASE( .name="log-writer", .description="Test log writer.", .skip=0 ) {
 
