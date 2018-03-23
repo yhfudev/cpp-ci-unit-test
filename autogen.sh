@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 ./autoclean.sh
 
@@ -32,12 +32,12 @@ autoreconf -f -i -Wall,no-obsolete
 autoreconf -f -i -Wall,no-obsolete
 
 if [ 1 = 1 ]; then
-./configure --disable-debug
+  ./configure --disable-debug
 else
-which "$CC" || CC=gcc
-which "$CXX" || CXX=g++
-CC=$CC CXX=$CXX ./configure --enable-debug --enable-coverage --enable-valgrind
-make clean; make coverage CC=$CC CXX=$CXX; make check-valgrind CC=$CC CXX=$CXX
+  which "$CC" || CC=gcc
+  which "$CXX" || if [[ "$CC" =~ .*clang.* ]]; then CXX=clang++; else CXX=g++; fi
+  CC=$CC CXX=$CXX ./configure --enable-debug --enable-coverage --enable-valgrind
+  make clean; make coverage CC=$CC CXX=$CXX; make check-valgrind CC=$CC CXX=$CXX
 fi
 
 #make clean

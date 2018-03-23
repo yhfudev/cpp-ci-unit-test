@@ -4,9 +4,11 @@ ciut
 An unit test framwork for C and C++.
 
 
-License | Travis | Appveyor | Coverity
-------- | ------ | -------- | --------
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/yhfudev/cpp-ci-unit-test/blob/master/COPYING) | [![Travis Build status](https://travis-ci.org/yhfudev/cpp-ci-unit-test.svg?branch=master)](https://travis-ci.org/yhfudev/cpp-ci-unit-test) | [![Appveyor Build status](https://ci.appveyor.com/api/projects/status/d849gxe54umc9nmp/branch/master?svg=true)](https://ci.appveyor.com/project/yhfudev/cpp-ci-unit-test/branch/master) | [![Coverity Scan Build Status](https://scan.coverity.com/projects/12089/badge.svg)](https://scan.coverity.com/projects/yhfudev-cpp-ci-unit-test)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/yhfudev/cpp-ci-unit-test/blob/master/COPYING)
+[![Travis Build status](https://travis-ci.org/yhfudev/cpp-ci-unit-test.svg?branch=master)](https://travis-ci.org/yhfudev/cpp-ci-unit-test)
+[![Appveyor Build status](https://ci.appveyor.com/api/projects/status/d849gxe54umc9nmp/branch/master?svg=true)](https://ci.appveyor.com/project/yhfudev/cpp-ci-unit-test/branch/master)
+[![codecov](https://codecov.io/gh/yhfudev/cpp-ci-unit-test/branch/master/graph/badge.svg)](https://codecov.io/gh/yhfudev/cpp-ci-unit-test)
+[![Coverity Scan Build Status](https://scan.coverity.com/projects/12089/badge.svg)](https://scan.coverity.com/projects/yhfudev-cpp-ci-unit-test)
 
 
 We introduce ciut as an unit test framwork for C and C++, has following features:
