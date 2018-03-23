@@ -42,7 +42,8 @@ TEST_CASE( .name="timeval", .description="Test the time functions." ) {
 
 #define msleep(microseconds) usleep((microseconds) * 1000);
 
-TEST_CASE( .name="msleep", .description="Test measure time.", .skip=0 ) {
+#if 0
+TEST_CASE( .name="msleep", .description="Test measure time.", .skip=1 ) {
     SECTION("test measure time") {
         size_t sleeptime = 1000;
         size_t ret_millisecond = 0;
@@ -50,9 +51,10 @@ TEST_CASE( .name="msleep", .description="Test measure time.", .skip=0 ) {
         msleep(sleeptime);
         TMC_END(ret_millisecond);
         CIUT_LOG ("sleep milli seconds=%" PRIuSZ, ret_millisecond);
-        REQUIRE (abs((int)ret_millisecond - (int)sleeptime) <= sleeptime/5);
+        REQUIRE (abs((int)ret_millisecond - (int)sleeptime) <= sleeptime/10);
     }
 }
+#endif
 
 MYLOG_GLOBAL_INIT;
 
