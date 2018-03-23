@@ -7,7 +7,7 @@
  * \copyright MIT License
  */
 
-/*#define CIUT_ENABLED    1 /**< user defined, a global macro defined to 1 to active the unit test code */
+/*#define CIUT_ENABLED    1 */ /**< user defined, a global macro defined to 1 to active the unit test code */
 #define CIUT_PLACE_MAIN 1 /**< user defined, a local macro defined to 1 to place main() inside a c file, use once */
 #include <ciut.h>
 

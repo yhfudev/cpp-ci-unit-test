@@ -602,7 +602,7 @@ typedef struct _ciut_record_t {
 /* test cases for main */
 #if defined(CIUT_PLACE_MAIN) && (CIUT_PLACE_MAIN == 1)
 
-TEST_CASE( .description="cuit test callback functions.", .skip=0 ) {
+TEST_CASE( .description="cuit test callback functions.", .skip=1 ) {
     SECTION("test parameters 1") {
         ciut_cb_log_plaintext(stderr, CIUT_LOG_CASE_SUCCESS, "");
         ciut_cb_log_plaintext(stderr, CIUT_LOG_CASE_SKIPED, "");
@@ -624,7 +624,7 @@ TEST_CASE( .description="cuit test callback functions.", .skip=0 ) {
     }
 }
 
-CIUT_TEST_CASE( .description="cuit test misc func.", .skip=0 ) {
+CIUT_TEST_CASE( .description="cuit test misc func.", .skip=1 ) {
     CIUT_SECTION("test parameters 1") {
         usage("");
 
@@ -638,6 +638,7 @@ CIUT_TEST_CASE( .description="cuit test misc func.", .skip=0 ) {
     }
 }
 
+#if 0
 CIUT_TEST_CASE( .description="cuit test main.", .skip=1 ) {
     CIUT_SECTION("test parameters 1") {
         char * argv1[1] = {"progname",};
@@ -647,6 +648,8 @@ CIUT_TEST_CASE( .description="cuit test main.", .skip=1 ) {
         ciut_main(2, argv2_1);
     }
 }
+#endif
+
 #endif /* CIUT_PLACE_MAIN */
 
 #endif /* _CI_UNIT_TEST_H */

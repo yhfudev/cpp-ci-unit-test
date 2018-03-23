@@ -14,7 +14,7 @@
 
 #include <iostream>
 
-/*#define CIUT_ENABLED 1 /**< user defined, a global macro defined to 1 to active the unit test code */
+//#define CIUT_ENABLED 1 /**< user defined, a global macro defined to 1 to active the unit test code */
 
 #if defined(CIUT_ENABLED) && (CIUT_ENABLED == 1)
 #include <ciut.h>
@@ -74,7 +74,7 @@ cb_cuit_check_output_sio (FILE * outf, void * user_arg)
     return 0;
 }
 
-TEST_CASE( .name="ciutsio", .description="Test ciut sio." ) {
+TEST_CASE( .name="ciutsio", .description="Test ciut sio.", .skip=0 ) {
     SECTION("test cuit_check_output") {
 #define CSTR_TEST1 ""
         REQUIRE(0 == cuit_check_output(cb_cuit_check_output_sio, (void *)CSTR_TEST1, CSTR_TEST1));
@@ -88,7 +88,7 @@ TEST_CASE( .name="ciutsio", .description="Test ciut sio." ) {
 
 #ifndef _WIN32
 // test uclog.h
-TEST_CASE( .name="log-writer", .description="Test log writer." ) {
+TEST_CASE( .name="log-writer", .description="Test log writer.", .skip=0 ) {
 
     SECTION("test log writer") {
         REQUIRE(0 == writer(NULL, NULL, 0));

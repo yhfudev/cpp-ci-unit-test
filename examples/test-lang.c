@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <string.h>
 
-/*#define CIUT_ENABLED 1 /**< user defined, a global macro defined to 1 to active the unit test code */
+/*#define CIUT_ENABLED 1 */ /**< user defined, a global macro defined to 1 to active the unit test code */
 
 #if defined(CIUT_ENABLED) && (CIUT_ENABLED == 1)
 #include <ciut.h>

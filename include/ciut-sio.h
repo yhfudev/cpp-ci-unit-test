@@ -140,7 +140,7 @@ destroy_file_anonpipe(pid_t mypid, FILE * fp_from, FILE * fp_to)
 
         cpid = wait(&c_status);
         if ((WIFEXITED(c_status) !=0) && (WEXITSTATUS(c_status) !=0)) {
-            fprintf(stderr, CUIT_LOGHDR "child exited with code %d\N",WEXITSTATUS(c_status));
+            fprintf(stderr, CUIT_LOGHDR "child %d exited with code %d\n", cpid, WEXITSTATUS(c_status));
             exit(10);
         }
         fp = fileno(fp_r);
@@ -247,7 +247,7 @@ destroy_file_namepipe(pid_t mypid, FILE * fp_from, FILE * fp_to)
 
         if (fclose(fp_w) != 0)  {
             fprintf(stderr, CUIT_LOGHDR "Fclose failed for %s\n", FN_FIFO);
-            fprintf(stderr, CUIT_LOGHDR "errno is %d\m", errno);
+            fprintf(stderr, CUIT_LOGHDR "errno is %d\n", errno);
             exit(8);
         }
 
@@ -255,7 +255,7 @@ destroy_file_namepipe(pid_t mypid, FILE * fp_from, FILE * fp_to)
 
         cpid = wait(&c_status);
         if ((WIFEXITED(c_status) !=0) && (WEXITSTATUS(c_status) !=0)) {
-            fprintf(stderr, CUIT_LOGHDR "child exited with code %d\n", WEXITSTATUS(c_status));
+            fprintf(stderr, CUIT_LOGHDR "child %d exited with code %d\n", cpid, WEXITSTATUS(c_status));
             exit(10);
         }
 

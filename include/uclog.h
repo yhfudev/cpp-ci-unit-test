@@ -63,7 +63,7 @@ static ssize_t writer(void *cookie, char const *data, size_t leng)
     return leng;
 }
 
-#if defined(__CYGWIN__) || defined(__FreeBSD__)
+#if defined(__FreeBSD__)
 // freebsd
 #define fsyslog(pfp) *(pfp) = fwopen(NULL, writer)
 #else
@@ -199,7 +199,7 @@ inline int
 sbuf::sync()
 {
     if (buffer_.length()) {
-        syslog(priority_, buffer_.c_str());
+        syslog(priority_, "%s", buffer_.c_str());
         buffer_.erase();
         priority_ = LOG_DEBUG; // default to debug for each message
     }
