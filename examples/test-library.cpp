@@ -12,6 +12,8 @@
 #include <stdlib.h>
 #include <math.h>
 
+#include <iostream>
+
 /*#define CIUT_ENABLED 1 /**< user defined, a global macro defined to 1 to active the unit test code */
 
 #if defined(CIUT_ENABLED) && (CIUT_ENABLED == 1)
@@ -40,7 +42,7 @@ TEST_CASE( .name="timeval", .description="Test the time functions." ) {
 
 #define msleep(microseconds) usleep((microseconds) * 1000);
 
-TEST_CASE( .name="msleep", .description="Test measure time.", .skip=1 ) {
+TEST_CASE( .name="msleep", .description="Test measure time.", .skip=0 ) {
     SECTION("test measure time") {
         size_t sleeptime = 1000;
         size_t ret_millisecond = 0;
@@ -48,7 +50,7 @@ TEST_CASE( .name="msleep", .description="Test measure time.", .skip=1 ) {
         msleep(sleeptime);
         TMC_END(ret_millisecond);
         CIUT_LOG ("sleep milli seconds=%" PRIuSZ, ret_millisecond);
-        REQUIRE (abs((int)ret_millisecond - (int)sleeptime) <= sleeptime/10);
+        REQUIRE (abs((int)ret_millisecond - (int)sleeptime) <= sleeptime/5);
     }
 }
 
@@ -80,6 +82,46 @@ TEST_CASE( .name="ciutsio", .description="Test ciut sio." ) {
 #undef CSTR_TEST1
     }
 }
+
+
+#ifndef _WIN32
+// test uclog.h
+TEST_CASE( .name="log-writer", .description="Test log writer." ) {
+
+    SECTION("test log writer") {
+        REQUIRE(0 == writer(NULL, NULL, 0));
+        REQUIRE(0 == writer(NULL, "", 0));
+        REQUIRE(0 == writer(NULL, "abc", 0));
+        REQUIRE(3 == writer(NULL, "abc", 3));
+        REQUIRE(0 == noop1(NULL, NULL, 0));
+        REQUIRE(0 == noop3(NULL, NULL, 0));
+        REQUIRE(0 == noop4(NULL));
+    }
+
+    SECTION("test C++ log buffer") {
+        std::clog.rdbuf(new Syslog::sbuf("foo", LOG_LOCAL0));
+        std::clog << Syslog::Notice << "myprog-E-net-0003 test log message" << std::endl;
+        std::clog << "myprog-E-net-0003 the default is debug level" << std::endl;
+    }
+
+    // example1: to syslog
+    SECTION("test C log syslog") {
+        setlogmask (LOG_UPTO (LOG_NOTICE));
+        openlog ("myapp", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_LOCAL1);
+        MYLOG_INIT_2SYSLOG(); // OR: fsyslog(&stderr); MYLOG_INIT_2STDERR();
+        MLT("the network port=%d", 1);
+        MLF("myapp-F-net-3013 network failed!");
+        closelog ();
+    }
+    SECTION("test C log stderr") {
+        MYLOG_INIT_2STDERR();
+        MLT("the network port=%d", 1);
+    }
+
+}
+
+
+#endif
 
 #endif /* CIUT_ENABLED */
 

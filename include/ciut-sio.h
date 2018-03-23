@@ -13,6 +13,8 @@
 #include <fcntl.h>
 #include <assert.h>
 
+#include "ucport.h"
+
 #ifndef EXIT_FAILURE
 #define EXIT_FAILURE -1
 #endif // EXIT_FAILURE
@@ -30,6 +32,7 @@ extern "C" {
 
 //int cuit_check_output(int (* cb_output)(FILE * outf, void * user_arg), void * user_arg, const char * output_expected);
 
+#if 0
 /**
  * \brief Create a anonymous pipe and return the pid and file pointers
  * \param fp_from: the file pointer for writing
@@ -51,12 +54,12 @@ create_file_anonpipe (FILE ** fp_from, FILE ** fp_to)
     assert (NULL != fp_to);
 
     if (pipe(pfds) == -1) {
-        perror("MAIN: pipe");
+        perror(CUIT_LOGHDR "MAIN: pipe");
         return -1;
     }
 
     if ((pid = fork()) < 0) {
-        perror("fork failed");
+        perror(CUIT_LOGHDR "fork failed");
         goto err_create_apipe;
     }
 
@@ -65,30 +68,30 @@ create_file_anonpipe (FILE ** fp_from, FILE ** fp_to)
 
         fp_w = fdopen(pfds[1], "w");
         if (!fp_w) {
-            perror("fdopen write stream:");
+            perror(CUIT_LOGHDR "fdopen write stream:");
             goto err_create_apipe;
         }
 
     } else  {                    /* PARENT  process */
         /* issue fopen for read */
-        fprintf(stderr, "open pipe for reading ...\n");
+        fprintf(stderr, CUIT_LOGHDR "open pipe for reading ...\n");
 
         fp_r = fdopen(pfds[0], "r");
         if (!fp_r) {
-            perror("fdopen read stream:");
+            perror(CUIT_LOGHDR "fdopen read stream:");
             goto err_create_apipe;
         }
 
-        fprintf(stderr, "change pipe flags ...\n");
+        fprintf(stderr, CUIT_LOGHDR "change pipe flags ...\n");
         /* get current flag settings of file                      */
         if ((flags = fcntl(fileno(fp_r), F_GETFL)) == -1) {
-            printf("fcntl returned -1\n");
+            fprintf(stderr, CUIT_LOGHDR "fcntl returned -1\n");
             goto err_create_apipe;
         }
         /* clear O_NONBLOCK  and reset file flags                 */
         flags &= (O_NONBLOCK);
         if ((fcntl(fileno(fp_r), F_SETFL,flags)) == -1) {
-            printf("\nfcntl returned -1");
+            fprintf(stderr, CUIT_LOGHDR "fcntl returned -1\n");
             goto err_create_apipe;
         }
     }
@@ -127,8 +130,8 @@ destroy_file_anonpipe(pid_t mypid, FILE * fp_from, FILE * fp_to)
     if (mypid == (pid_t)0) {        /* CHILD process */
         fp = fileno(fp_r);
         if (fclose(fp_w) != 0)  {
-            printf("\nFclose failed");
-            printf("\nerrno is %d", errno);
+            fprintf(stderr, CUIT_LOGHDR "Fclose failed\n");
+            fprintf(stderr, CUIT_LOGHDR "errno is %d\n", errno);
             exit(8);
         }
         close(fp);
@@ -137,21 +140,22 @@ destroy_file_anonpipe(pid_t mypid, FILE * fp_from, FILE * fp_to)
 
         cpid = wait(&c_status);
         if ((WIFEXITED(c_status) !=0) && (WEXITSTATUS(c_status) !=0)) {
-            printf("\nchild exited with code %d",WEXITSTATUS(c_status));
+            fprintf(stderr, CUIT_LOGHDR "child exited with code %d\N",WEXITSTATUS(c_status));
             exit(10);
         }
         fp = fileno(fp_r);
 
         if (fclose(fp_r) != 0) {
-            printf("\nFclose failed");
-            printf("\nerrno is %d", errno);
+            fprintf(stderr, CUIT_LOGHDR "Fclose failed\N");
+            fprintf(stderr, CUIT_LOGHDR "errno is %d\N", errno);
             exit(8);
         }
         close(fp);
     }
 }
+#endif // 0
 
-#define FN_FIFO "myfifo"
+#define FN_FIFO "cuit-io-namefifo"
 
 /**
  * \brief Create a named pipe and return the pid and file pointers
@@ -173,43 +177,43 @@ create_file_namepipe (FILE ** fp_from, FILE ** fp_to)
     assert (NULL != fp_to);
 
     //unlink(FN_FIFO);
-    fprintf(stderr, "create name pipe '%s' ...\n", FN_FIFO);
+    fprintf(stderr, CUIT_LOGHDR "create name pipe '%s' ...\n", FN_FIFO);
     mkfifo(FN_FIFO, S_IRWXU);
 
     if ((pid = fork()) < 0) {
-        perror("fork failed");
+        perror(CUIT_LOGHDR "fork failed");
         goto err_create_npipe;
     }
 
     if (pid == (pid_t)0) {        /* CHILD process */
         /* issue fopen for write end of the fifo */
 
-        fprintf(stderr, "open pipe '%s' for writing ...\n", FN_FIFO);
+        fprintf(stderr, CUIT_LOGHDR "open pipe '%s' for writing ...\n", FN_FIFO);
         fp_w = fopen(FN_FIFO, "w");
         if (!fp_w) {
-            perror("fdopen write stream:");
+            perror(CUIT_LOGHDR "fdopen write stream:");
             exit(EXIT_FAILURE);
         }
 
     } else  {                    /* PARENT  process */
         /* issue fopen for read */
 
-        fprintf(stderr, "open pipe '%s' for reading ...\n", FN_FIFO);
+        fprintf(stderr, CUIT_LOGHDR "open pipe '%s' for reading ...\n", FN_FIFO);
         fp_r = fopen(FN_FIFO, "r");
         if (!fp_r) {
-            perror("fdopen read stream:");
+            perror(CUIT_LOGHDR "fdopen read stream:");
             goto err_create_npipe;
         }
-        fprintf(stderr, "change pipe '%s' flags ...\n", FN_FIFO);
+        fprintf(stderr, CUIT_LOGHDR "change pipe '%s' flags ...\n", FN_FIFO);
         /* get current flag settings of file                      */
         if ((flags = fcntl(fileno(fp_r), F_GETFL)) == -1) {
-            printf("fcntl returned -1 for %s\n", FN_FIFO);
+            fprintf(stderr, CUIT_LOGHDR "fcntl returned -1 for %s\n", FN_FIFO);
             goto err_create_npipe;
         }
         /* clear O_NONBLOCK  and reset file flags                 */
         flags &= (O_NONBLOCK);
         if ((fcntl(fileno(fp_r), F_SETFL,flags)) == -1) {
-            printf("\nfcntl returned -1 for %s", FN_FIFO);
+            fprintf(stderr, CUIT_LOGHDR "fcntl returned -1 for %s\n", FN_FIFO);
             goto err_create_npipe;
         }
     }
@@ -242,8 +246,8 @@ destroy_file_namepipe(pid_t mypid, FILE * fp_from, FILE * fp_to)
     if (mypid == (pid_t)0) {        /* CHILD process */
 
         if (fclose(fp_w) != 0)  {
-            printf("\nFclose failed for %s", FN_FIFO);
-            printf("\nerrno is %d", errno);
+            fprintf(stderr, CUIT_LOGHDR "Fclose failed for %s\n", FN_FIFO);
+            fprintf(stderr, CUIT_LOGHDR "errno is %d\m", errno);
             exit(8);
         }
 
@@ -251,18 +255,18 @@ destroy_file_namepipe(pid_t mypid, FILE * fp_from, FILE * fp_to)
 
         cpid = wait(&c_status);
         if ((WIFEXITED(c_status) !=0) && (WEXITSTATUS(c_status) !=0)) {
-            printf("\nchild exited with code %d",WEXITSTATUS(c_status));
+            fprintf(stderr, CUIT_LOGHDR "child exited with code %d\n", WEXITSTATUS(c_status));
             exit(10);
         }
 
         if (fclose(fp_r) != 0) {
-            printf("\nFclose failed for %s", FN_FIFO);
-            printf("\nerrno is %d", errno);
+            fprintf(stderr, CUIT_LOGHDR "Fclose failed for %s\n", FN_FIFO);
+            fprintf(stderr, CUIT_LOGHDR "errno is %d\n", errno);
             exit(8);
         }
         if (remove(FN_FIFO) != 0) {
-            printf("\nremove failed for %s", FN_FIFO);
-            printf("\nerrno is %d", errno);
+            fprintf(stderr, CUIT_LOGHDR "remove failed for %s\n", FN_FIFO);
+            fprintf(stderr, CUIT_LOGHDR "errno is %d\n", errno);
             exit(9);
         }
     }
@@ -300,9 +304,12 @@ read_and_compare(FILE *fp, const char * expected)
     }
     free (buffer);
 
-    fprintf(stderr, "[test] expected string:\n%s", expected);
-    fprintf(stderr, "[test] recv string:\n%s", buf_all);
     ret = strcmp(expected, buf_all);
+    if (0 != ret) {
+        fprintf(stderr, CUIT_LOGHDR "Error in check output: ret=%d\n", ret);
+        fprintf(stderr, CUIT_LOGHDR "expected string:\n'%s'\n", expected);
+        fprintf(stderr, CUIT_LOGHDR "recv string:\n'%s'\n", buf_all);
+    }
 
     free (buf_all);
     return ret;
@@ -335,20 +342,20 @@ cuit_check_output(int (* cb_output)(FILE * outf, void * user_arg), void * user_a
 #endif
 
     if ((pid = cb_create_pipe(&fp_w, &fp_r)) < 0) {
-        perror("fork failed");
+        perror(CUIT_LOGHDR "fork failed");
         return -1;
     }
 
     if (pid == (pid_t)0) {        /* CHILD process */
         /* issue fopen for write end of the fifo */
 
-        fprintf(stderr, "send ...\n");
+        fprintf(stderr, CUIT_LOGHDR "send ...\n");
         cb_output(fp_w, user_arg);
 
     } else  {                    /* PARENT  process */
         /* issue fopen for read */
 
-        fprintf(stderr, "recv ...\n");
+        fprintf(stderr, CUIT_LOGHDR "recv ...\n");
         ret = read_and_compare(fp_r, output_expected);
     }
 

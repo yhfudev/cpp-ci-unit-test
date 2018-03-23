@@ -242,20 +242,22 @@ typedef struct _ciut_record_t {
 
     inline static void ciut_cb_log_plaintext(void *fp, int type, const char *msg, ...)
     {
+        assert (NULL != fp);
         switch (type) {
         case CIUT_LOG_CASE_SUCCESS:
-            fprintf((FILE *)fp, "PASS: %s\n", msg);
+            fprintf((FILE *)fp, CUIT_LOGHDR "PASS: %s\n", msg);
             break;
         case CIUT_LOG_CASE_SKIPED:
-            fprintf((FILE *)fp, "SKIP: %s\n", msg);
+            fprintf((FILE *)fp, CUIT_LOGHDR "SKIP: %s\n", msg);
             break;
         case CIUT_LOG_CASE_FAILED:
-            fprintf((FILE *)fp, "FAIL: %s\n", msg);
+            fprintf((FILE *)fp, CUIT_LOGHDR "FAIL: %s\n", msg);
             break;
         case CIUT_LOG_CASE_ASSERT:
         {
             va_list args;
             va_start (args, msg);
+            fprintf((FILE *)fp, CUIT_LOGHDR);
             vfprintf((FILE *)fp, msg, args);
             fprintf((FILE *)fp, "\n");
             va_end (args);
@@ -264,7 +266,7 @@ typedef struct _ciut_record_t {
         case CIUT_LOG_CASE_START:
             break;
         case CIUT_LOG_SUITE_START:
-            fprintf((FILE *)fp, "Test Suite: %s\n", msg);
+            fprintf((FILE *)fp, CUIT_LOGHDR "Test Suite: %s\n", msg);
             break;
         case CIUT_LOG_SUITE_END:
             break;
@@ -357,6 +359,9 @@ typedef struct _ciut_record_t {
         if (NULL == pattern) {
             return 1;
         }
+        if (NULL == desc) {
+            desc = "";
+        }
         assert (NULL != desc);
         if (NULL != strstr(desc, pattern)) {
             return 1;
@@ -422,7 +427,7 @@ typedef struct _ciut_record_t {
             } else if ((0 == strcmp("-", argv[i])) || (0 == strcmp("-c", argv[i]))) {
                 fn_xml = NULL;
             } else {
-                fprintf(stderr, "Error: unknown parameter %s.\n", argv[i]);
+                fprintf(stderr, CUIT_LOGHDR "Error: unknown parameter %s.\n", argv[i]);
                 exit(1);
             }
         }
@@ -436,11 +441,11 @@ typedef struct _ciut_record_t {
             }
             psuite->fp_log = fopen(fn_xml, "w+");
             if (NULL == psuite->fp_log) {
-                fprintf(stderr, "Error in open file %s.\n", fn_xml);
+                fprintf(stderr, CUIT_LOGHDR "Error in open file %s.\n", fn_xml);
                 exit(1);
             }
             psuite->cb_log = ciut_cb_log_xml;
-            fprintf(stdout, "Created XML file %s.\n", fn_xml);
+            fprintf(stdout, CUIT_LOGHDR "Created XML file %s.\n", fn_xml);
         }
 
         assert (psuite);
@@ -471,7 +476,7 @@ typedef struct _ciut_record_t {
 
             if (flg_list) {
                 // list the item
-                fprintf (stdout, "% 3" PRIuSZ ") %s --%s %s\n", psuite->cnt_total, ctc_cur->name, (ctc_cur->skip?" [skip]":""), ctc_cur->description);
+                fprintf (stdout, CUIT_LOGHDR "% 3" PRIuSZ ") %s --%s %s\n", psuite->cnt_total, ctc_cur->name, (ctc_cur->skip?" [skip]":""), ctc_cur->description);
                 continue;
             }
 
@@ -533,11 +538,11 @@ typedef struct _ciut_record_t {
 
         psuite->cb_log(psuite->fp_log, CIUT_LOG_SUITE_END, title);
         if (! flg_list) {
-            fprintf(stdout, "Results:\n");
-            fprintf(stdout, "    total cases: %" PRIuSZ "\n", psuite->cnt_total);
-            fprintf(stdout, "  skipped cases: %" PRIuSZ "\n", psuite->cnt_skipped);
-            fprintf(stdout, "   passed cases: %" PRIuSZ "\n", psuite->cnt_total - psuite->cnt_failed - psuite->cnt_skipped);
-            fprintf(stdout, "   failed cases: %" PRIuSZ "\n", psuite->cnt_failed);
+            fprintf(stdout, CUIT_LOGHDR "Results:\n");
+            fprintf(stdout, CUIT_LOGHDR "    total cases: %" PRIuSZ "\n", psuite->cnt_total);
+            fprintf(stdout, CUIT_LOGHDR "  skipped cases: %" PRIuSZ "\n", psuite->cnt_skipped);
+            fprintf(stdout, CUIT_LOGHDR "   passed cases: %" PRIuSZ "\n", psuite->cnt_total - psuite->cnt_failed - psuite->cnt_skipped);
+            fprintf(stdout, CUIT_LOGHDR "   failed cases: %" PRIuSZ "\n", psuite->cnt_failed);
         }
         if ((NULL != psuite->fp_log) && (stdout != psuite->fp_log)) {
             fclose((FILE *)psuite->fp_log);
@@ -593,5 +598,55 @@ typedef struct _ciut_record_t {
  *
  */
 #define CIUT_DBL_EQUAL(val1, val2) REQUIRE(DBL_CLOSETO(val1, val2, DBL_ERRROR))
+
+/* test cases for main */
+#if defined(CIUT_PLACE_MAIN) && (CIUT_PLACE_MAIN == 1)
+
+TEST_CASE( .description="cuit test callback functions.", .skip=0 ) {
+    SECTION("test parameters 1") {
+        ciut_cb_log_plaintext(stderr, CIUT_LOG_CASE_SUCCESS, "");
+        ciut_cb_log_plaintext(stderr, CIUT_LOG_CASE_SKIPED, "");
+        ciut_cb_log_plaintext(stderr, CIUT_LOG_CASE_FAILED, "");
+        ciut_cb_log_plaintext(stderr, CIUT_LOG_CASE_ASSERT, "test assert %d\n", __LINE__);
+        ciut_cb_log_plaintext(stderr, CIUT_LOG_CASE_START, "");
+        ciut_cb_log_plaintext(stderr, CIUT_LOG_CASE_FAILED, "");
+        ciut_cb_log_plaintext(stderr, CIUT_LOG_SUITE_START, "");
+        ciut_cb_log_plaintext(stderr, CIUT_LOG_SUITE_END, "");
+
+        ciut_cb_log_xml(stderr, CIUT_LOG_CASE_SUCCESS, "");
+        ciut_cb_log_xml(stderr, CIUT_LOG_CASE_SKIPED, "");
+        ciut_cb_log_xml(stderr, CIUT_LOG_CASE_FAILED, "");
+        ciut_cb_log_xml(stderr, CIUT_LOG_CASE_ASSERT, "test assert %d\n", __LINE__);
+        ciut_cb_log_xml(stderr, CIUT_LOG_CASE_START, "");
+        ciut_cb_log_xml(stderr, CIUT_LOG_CASE_FAILED, "");
+        ciut_cb_log_xml(stderr, CIUT_LOG_SUITE_START, "");
+        ciut_cb_log_xml(stderr, CIUT_LOG_SUITE_END, "");
+    }
+}
+
+CIUT_TEST_CASE( .description="cuit test misc func.", .skip=0 ) {
+    CIUT_SECTION("test parameters 1") {
+        usage("");
+
+        CIUT_ASSERT(1 == filter_match(NULL, NULL));
+        CIUT_ASSERT(1 == filter_match("", NULL));
+        CIUT_ASSERT(1 == filter_match(NULL, ""));
+        CIUT_ASSERT(1 == filter_match(NULL, "abc-def"));
+        CIUT_ASSERT(0 == filter_match("cde", NULL));
+        CIUT_ASSERT(1 == filter_match("abc", "abc-def"));
+        CIUT_ASSERT(0 == filter_match("cde", "abc-def"));
+    }
+}
+
+CIUT_TEST_CASE( .description="cuit test main.", .skip=1 ) {
+    CIUT_SECTION("test parameters 1") {
+        char * argv1[1] = {"progname",};
+        char * argv2_1[2] = {"progname", "-h"};
+
+        //ciut_main(1, argv1);
+        ciut_main(2, argv2_1);
+    }
+}
+#endif /* CIUT_PLACE_MAIN */
 
 #endif /* _CI_UNIT_TEST_H */

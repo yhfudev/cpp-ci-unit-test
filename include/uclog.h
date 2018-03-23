@@ -49,6 +49,9 @@ static ssize_t writer(void *cookie, char const *data, size_t leng)
 {
     (void)cookie;
     int     p = LOG_DEBUG, len;
+    if (NULL == data) {
+        return 0;
+    }
     do len = strlen(priov[p]);
     while (memcmp(data, priov[p], len) && --p >= 0);
 
@@ -57,10 +60,10 @@ static ssize_t writer(void *cookie, char const *data, size_t leng)
     while (*data == ' ') ++data, --leng;
 
     syslog(p, "%.*s", (int)leng, data);
-    return  leng;
+    return leng;
 }
 
-#if 1
+#if 0
 // freebsd
 #define fsyslog(pfp) *(pfp) = fwopen(NULL, writer)
 #else
