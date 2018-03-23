@@ -1,6 +1,13 @@
-SUBDIRS= examples
-
 ACLOCAL_AMFLAGS = -I m4
+
+SUBDIRS= examples
+DISTCLEANFILES=
+
+EXTRA_DIST=autogen.sh autoclean.sh AUTHORS README.md ChangeLog
+
+CLEANFILES = *~ @PACKAGE@*.bz2 @PACKAGE@*.tar.gz *.log
+#dist_doc_DATA = LICENSE
+DISTCLEANFILES += *~ @PACKAGE@*.bz2 @PACKAGE@*.tar.gz *.log aclocal.m4
 
 DOC_FILES= \
     $(top_srcdir)/doc/Doxyfile.in \
@@ -18,8 +25,7 @@ include_HEADERS = \
     $(top_srcdir)/include/uctime.h \
     $(NULL)
 
-
-EXTRA_DIST=autogen.sh autoclean.sh AUTHORS README.md ChangeLog \
+EXTRA_DIST += \
     $(top_srcdir)/m4/ax_check_compile_flag.m4 \
     $(top_srcdir)/m4/ax_check_link_flag.m4 \
     $(top_srcdir)/m4/ax_cxx_compile_stdcxx.m4 \
@@ -58,6 +64,8 @@ ChangeLog: .git
         hg log --template changelog > ChangeLog;            \
         touch $(srcdir)/.last-cl-gen;                       \
     fi
+
+EXTRA_DIST += .last-cl-gen
 
 
 if COVERAGE

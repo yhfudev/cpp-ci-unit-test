@@ -32,20 +32,19 @@ autoreconf -f -i -Wall,no-obsolete
 autoreconf -f -i -Wall,no-obsolete
 
 if [ 1 = 1 ]; then
-  ./configure --disable-debug
+  ./configure --disable-debug --disable-coverage --disable-valgrind
+
+  make clean
+  make ChangeLog
+  make dist-gzip
+  #make -C doc/latex/
+
 else
   which "$CC" || CC=gcc
   which "$CXX" || if [[ "$CC" =~ .*clang.* ]]; then CXX=clang++; else CXX=g++; fi
   CC=$CC CXX=$CXX ./configure --enable-debug --enable-coverage --enable-valgrind
-  make clean; make; make coverage CC=$CC CXX=$CXX; make check CC=$CC CXX=$CXX; make check-valgrind CC=$CC CXX=$CXX
+  make clean; make -j 8 coverage CC=$CC CXX=$CXX; make check CC=$CC CXX=$CXX; make check-valgrind CC=$CC CXX=$CXX
 fi
 
-#make clean
-#make ChangeLog
-
-#make
-#make check
-#make -C doc/latex/
-#make dist-gzip
 
 fi

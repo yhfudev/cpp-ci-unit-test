@@ -84,6 +84,7 @@ if test "x$enable_coverage" = "xyes"; then
     AC_SUBST(COVERAGE_LDFLAGS)
 
     CFLAGS="${COVERAGE_CFLAGS} ${CFLAGS}"
+    CXXFLAGS="${COVERAGE_CFLAGS} ${CXXFLAGS}"
     LDFLAGS="${COVERAGE_LDFLAGS} ${LDFLAGS}"
 
     AC_MSG_NOTICE([coverage enabled, adding "-g -O0" to CFLAGS])
