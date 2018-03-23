@@ -214,7 +214,7 @@ script:
   # 'make coverage' should be right after 'make' and before any 'make check'
   - if [[ ! "$TRAVIS_OS_NAME" == "osx" ]]; then make coverage CC=${CC} CXX=${CXX} ; fi
   - make check CC=${CC} CXX=${CXX}
-  - if [[ ! "$TRAVIS_OS_NAME" == "osx" ]]; then make check-valgrind CC=${CC} CXX=${CXX} ; cat examples/test-suite-memcheck.log ; cat examples/test-suite-helgrind.log ; cat examples/test-suite-drd.log; fi
+  - if [[ ! "$TRAVIS_OS_NAME" == "osx" ]]; then make check-valgrind CC=${CC} CXX=${CXX} ; find . -name "test-suite-*.log" | xargs -n 1 cat; fi
   - examples/ciutexcpp
   - examples/ciutexc
 

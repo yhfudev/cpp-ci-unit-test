@@ -37,7 +37,7 @@ else
   which "$CC" || CC=gcc
   which "$CXX" || if [[ "$CC" =~ .*clang.* ]]; then CXX=clang++; else CXX=g++; fi
   CC=$CC CXX=$CXX ./configure --enable-debug --enable-coverage --enable-valgrind
-  make clean; make coverage CC=$CC CXX=$CXX; make check-valgrind CC=$CC CXX=$CXX
+  make clean; make; make coverage CC=$CC CXX=$CXX; make check CC=$CC CXX=$CXX; make check-valgrind CC=$CC CXX=$CXX
 fi
 
 #make clean

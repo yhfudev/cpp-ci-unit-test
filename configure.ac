@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.60])
-AC_INIT(ciut, 1.0.0, yhfudev@gmail.com)
+AC_INIT(ciut, 1.0.1, yhfudev@gmail.com)
 AC_CONFIG_SRCDIR([include/ciut.h])
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE(-Wall subdir-objects parallel-tests color-tests)
@@ -83,7 +83,7 @@ if test "x$enable_coverage" = "xyes"; then
     AC_SUBST(COVERAGE_CFLAGS)
     AC_SUBST(COVERAGE_LDFLAGS)
 
-    CPPFLAGS="${COVERAGE_CFLAGS} ${CPPFLAGS}"
+    CFLAGS="${COVERAGE_CFLAGS} ${CFLAGS}"
     LDFLAGS="${COVERAGE_LDFLAGS} ${LDFLAGS}"
 
     AC_MSG_NOTICE([coverage enabled, adding "-g -O0" to CFLAGS])
@@ -93,7 +93,7 @@ if test "x$enable_coverage" = "xyes"; then
 fi
 AM_CONDITIONAL([COVERAGE], [test x$enable_coverage = xyes])
 
-if test "x$enable_debug" = "xyes"  || "x$enable_coverage" = "xyes" ; then
+if test "x$enable_debug" = "xyes"  || test "x$enable_coverage" = "xyes" ; then
   changequote({,})
   CFLAGS=`echo "$CFLAGS" | $SED -e 's/-O[0-9s]*//g'`
   CXXFLAGS=`echo "$CXXFLAGS" | $SED -e 's/-O[0-9s]*//g'`
