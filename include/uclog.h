@@ -21,7 +21,7 @@ extern "C" {
 #endif // __cplusplus
 
 
-#ifdef _WIN32
+#if (defined(_WIN32) || defined(__CYGWIN__) || defined(__APPLE__))
 #define syslog(...)
 #define openlog(...)
 #define MYLOG_INIT_2SYSLOG() MYLOG_INIT_2STDERR()
