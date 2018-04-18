@@ -155,7 +155,7 @@ destroy_file_anonpipe(pid_t mypid, FILE * fp_from, FILE * fp_to)
 }
 #endif // 0
 
-#define FN_FIFO "cuit-io-namefifo"
+#define FN_FIFO "cuit-io-namedfifo"
 
 /**
  * \brief Create a named pipe and return the pid and file pointers
@@ -172,13 +172,18 @@ create_file_namepipe (FILE ** fp_from, FILE ** fp_to)
     FILE *fp_w = NULL;
     int flags = 0;
     pid_t pid;
+    int ret;
 
     assert (NULL != fp_from);
     assert (NULL != fp_to);
 
-    //unlink(FN_FIFO);
     fprintf(stderr, CUIT_LOGHDR "create name pipe '%s' ...\n", FN_FIFO);
-    mkfifo(FN_FIFO, S_IRWXU);
+    //unlink(FN_FIFO);
+    ret = mkfifo(FN_FIFO, S_IRWXU);
+    //if (0 != ret) {
+    //    fprintf(stderr, CUIT_LOGHDR "unable to create name pipe '%s' ...\n", FN_FIFO);
+    //    return -1;
+    //}
 
     if ((pid = fork()) < 0) {
         perror(CUIT_LOGHDR "fork failed");
@@ -187,33 +192,32 @@ create_file_namepipe (FILE ** fp_from, FILE ** fp_to)
 
     if (pid == (pid_t)0) {        /* CHILD process */
         /* issue fopen for write end of the fifo */
-
-        fprintf(stderr, CUIT_LOGHDR "open pipe '%s' for writing ...\n", FN_FIFO);
+        fprintf(stderr, CUIT_LOGHDR "child open pipe '%s' for writing ...\n", FN_FIFO);
         fp_w = fopen(FN_FIFO, "w");
         if (!fp_w) {
-            perror(CUIT_LOGHDR "fdopen write stream:");
+            perror(CUIT_LOGHDR "child fdopen write stream");
             exit(EXIT_FAILURE);
         }
 
     } else  {                    /* PARENT  process */
         /* issue fopen for read */
 
-        fprintf(stderr, CUIT_LOGHDR "open pipe '%s' for reading ...\n", FN_FIFO);
+        fprintf(stderr, CUIT_LOGHDR "parent open pipe '%s' for reading ...\n", FN_FIFO);
         fp_r = fopen(FN_FIFO, "r");
         if (!fp_r) {
-            perror(CUIT_LOGHDR "fdopen read stream:");
+            perror(CUIT_LOGHDR "parent fdopen read stream");
             goto err_create_npipe;
         }
-        fprintf(stderr, CUIT_LOGHDR "change pipe '%s' flags ...\n", FN_FIFO);
+        fprintf(stderr, CUIT_LOGHDR "parent change pipe '%s' flags ...\n", FN_FIFO);
         /* get current flag settings of file                      */
         if ((flags = fcntl(fileno(fp_r), F_GETFL)) == -1) {
-            fprintf(stderr, CUIT_LOGHDR "fcntl returned -1 for %s\n", FN_FIFO);
+            fprintf(stderr, CUIT_LOGHDR "parent fcntl returned -1 for %s\n", FN_FIFO);
             goto err_create_npipe;
         }
         /* clear O_NONBLOCK  and reset file flags                 */
         flags &= (O_NONBLOCK);
         if ((fcntl(fileno(fp_r), F_SETFL,flags)) == -1) {
-            fprintf(stderr, CUIT_LOGHDR "fcntl returned -1 for %s\n", FN_FIFO);
+            fprintf(stderr, CUIT_LOGHDR "parent fcntl returned -1 for %s\n", FN_FIFO);
             goto err_create_npipe;
         }
     }

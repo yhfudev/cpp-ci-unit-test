@@ -11,6 +11,7 @@
 #include <unistd.h> // sleep
 #include <stdlib.h>
 #include <math.h>
+#include <unistd.h> // link()
 
 #include <iostream>
 
@@ -18,6 +19,7 @@
 
 #if defined(CIUT_ENABLED) && (CIUT_ENABLED == 1)
 #include <ciut.h>
+#include <uclog.h>
 #include <ciut-sio.h>
 
 #define NUM_ARRAY(a) (sizeof(a)/sizeof((a)[0]))
@@ -29,6 +31,7 @@ TEST_CASE( .name="timeval", .description="Test the time functions." ) {
             {0,   0}, {0,   0}, {0, 0},
             {0, 500}, {0, 500}, {0, 0},
             {1, 500}, {0, 500}, {1, 0},
+            {1, 500}, {0, 501}, {0, 999999},
         };
         size_t i;
         for (i = 0; i < NUM_ARRAY(sub_data); i += 3) {
@@ -74,6 +77,30 @@ cb_cuit_check_output_sio (FILE * outf, void * user_arg)
     return 0;
 }
 
+const char *
+err2cstr_cstd(int err)
+{
+#define CASE(a) case (a): return #a
+    switch(err) {
+        CASE(EACCES);
+        CASE(EEXIST);
+        CASE(ELOOP);
+        CASE(EMLINK);
+        CASE(ENAMETOOLONG);
+        CASE(ENOENT);
+        CASE(ENOSPC);
+        CASE(ENOTDIR);
+        CASE(EPERM);
+        CASE(EROFS);
+        CASE(EXDEV);
+        //CASE(EXDEV);
+        //CASE(ELOOP);
+        //CASE(ENAMETOOLONG);
+    }
+    return "(unknown error)";
+}
+
+
 TEST_CASE( .name="ciutsio", .description="Test ciut sio.", .skip=0 ) {
     SECTION("test cuit_check_output") {
 #define CSTR_TEST1 ""
@@ -85,7 +112,41 @@ TEST_CASE( .name="ciutsio", .description="Test ciut sio.", .skip=0 ) {
     }
 }
 
-#if 0 // ! (defined(_WIN32) || defined(__CYGWIN__) || defined(__APPLE__))
+#if 1
+TEST_CASE( .name="ciutsio", .description="Test ciut sio.", .skip=0 ) {
+    SECTION("test create_file_namepipe") {
+        int ret;
+        pid_t pid;
+        // create a null file
+        unlink(FN_FIFO);
+        ret = symlink(FN_FIFO, FN_FIFO);
+        //ret = mkfifo(FN_FIFO, S_IREAD | S_IEXEC);
+        if (0 == ret) {
+            FILE *fp_f = NULL;
+            FILE *fp_t = NULL;
+            pid = create_file_namepipe(&fp_f, &fp_t);
+            CIUT_LOG("DEBUG: create_file_namepipe return %d", pid);
+            if (pid >= 0) {
+                destroy_file_namepipe(pid, fp_f, fp_t);
+                if (pid == 0) {
+                    CIUT_LOG("child exit", 0);
+                    exit (0);
+                }
+            }
+            unlink(FN_FIFO);
+
+            REQUIRE(-1 == pid);
+            REQUIRE(fp_f == NULL);
+            REQUIRE(fp_t == NULL);
+        } else {
+            CIUT_LOG("ERR: link return %d: err=%d %s", ret, errno, err2cstr_cstd(errno));
+            perror("ERR: link()");
+        }
+    }
+}
+#endif // 0
+
+#if ! (defined(_WIN32) || defined(__CYGWIN__) || defined(__APPLE__))
 // test uclog.h
 TEST_CASE( .name="log-writer", .description="Test log writer.", .skip=0 ) {
 

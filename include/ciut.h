@@ -20,7 +20,6 @@
 
 #include "ucport.h"
 #include "uctime.h"
-#include "uclog.h"
 
 // user defined, a global macro defined to 1 to active the unit test code
 //#define CIUT_ENABLED 1
@@ -409,7 +408,7 @@ typedef struct _ciut_record_t {
             #define CHK_IDX(i) if (i >= argc) { fprintf(stderr, "Error in arguments. Use argument '-h' to show help.\n"); exit(1); }
             if (0 == strcmp("-h", argv[i])) {
                 usage(argv[0]);
-                exit(0);
+                return (0);
             } else if (0 == strcmp("-l", argv[i])) {
                 flg_list = 1;
             } else if (0 == strcmp("-t", argv[i])) {
@@ -428,7 +427,7 @@ typedef struct _ciut_record_t {
                 fn_xml = NULL;
             } else {
                 fprintf(stderr, CUIT_LOGHDR "Error: unknown parameter %s.\n", argv[i]);
-                exit(1);
+                return (1);
             }
         }
         if (flg_list) {
@@ -602,27 +601,29 @@ typedef struct _ciut_record_t {
 /* test cases for main */
 #if defined(CIUT_PLACE_MAIN) && (CIUT_PLACE_MAIN == 1)
 
-TEST_CASE( .description="cuit test callback functions.", .skip=0 ) {
+#if 0
+TEST_CASE( .description="cuit test callback functions.", .skip=1 ) {
     SECTION("test parameters 1") {
+        ciut_cb_log_plaintext(stderr, CIUT_LOG_SUITE_START, "");
+        ciut_cb_log_plaintext(stderr, CIUT_LOG_CASE_START, "");
+        ciut_cb_log_plaintext(stderr, CIUT_LOG_CASE_ASSERT, "test assert %d\n", __LINE__);
         ciut_cb_log_plaintext(stderr, CIUT_LOG_CASE_SUCCESS, "");
         ciut_cb_log_plaintext(stderr, CIUT_LOG_CASE_SKIPED, "");
         ciut_cb_log_plaintext(stderr, CIUT_LOG_CASE_FAILED, "");
-        ciut_cb_log_plaintext(stderr, CIUT_LOG_CASE_ASSERT, "test assert %d\n", __LINE__);
-        ciut_cb_log_plaintext(stderr, CIUT_LOG_CASE_START, "");
         ciut_cb_log_plaintext(stderr, CIUT_LOG_CASE_FAILED, "");
-        ciut_cb_log_plaintext(stderr, CIUT_LOG_SUITE_START, "");
         ciut_cb_log_plaintext(stderr, CIUT_LOG_SUITE_END, "");
 
+        ciut_cb_log_xml(stderr, CIUT_LOG_SUITE_START, "");
+        ciut_cb_log_xml(stderr, CIUT_LOG_CASE_START, "");
+        ciut_cb_log_xml(stderr, CIUT_LOG_CASE_ASSERT, "test assert %d\n", __LINE__);
         ciut_cb_log_xml(stderr, CIUT_LOG_CASE_SUCCESS, "");
         ciut_cb_log_xml(stderr, CIUT_LOG_CASE_SKIPED, "");
         ciut_cb_log_xml(stderr, CIUT_LOG_CASE_FAILED, "");
-        ciut_cb_log_xml(stderr, CIUT_LOG_CASE_ASSERT, "test assert %d\n", __LINE__);
-        ciut_cb_log_xml(stderr, CIUT_LOG_CASE_START, "");
         ciut_cb_log_xml(stderr, CIUT_LOG_CASE_FAILED, "");
-        ciut_cb_log_xml(stderr, CIUT_LOG_SUITE_START, "");
         ciut_cb_log_xml(stderr, CIUT_LOG_SUITE_END, "");
     }
 }
+#endif // 0
 
 CIUT_TEST_CASE( .description="cuit test misc func.", .skip=0 ) {
     CIUT_SECTION("test parameters 1") {
@@ -638,17 +639,93 @@ CIUT_TEST_CASE( .description="cuit test misc func.", .skip=0 ) {
     }
 }
 
-#if 0
-CIUT_TEST_CASE( .description="cuit test main.", .skip=1 ) {
-    CIUT_SECTION("test parameters 1") {
-        char * argv1[1] = {"progname",};
-        char * argv2_1[2] = {"progname", "-h"};
-
-        //ciut_main(1, argv1);
-        ciut_main(2, argv2_1);
+#ifndef NUM_ARRAY
+#define NUM_ARRAY(a) (sizeof(a)/sizeof((a)[0]))
+#endif
+CIUT_TEST_CASE( .description="cuit test main help.", .skip=0 ) {
+    CIUT_SECTION("test parameter help") {
+        char * argv[] = {"progname", "-h"};
+        ciut_main(NUM_ARRAY(argv), argv);
     }
 }
-#endif
+
+CIUT_TEST_CASE( .description="cuit test main list.", .skip=0 ) {
+    CIUT_SECTION("test parameter list") {
+        char * argv[] = {"progname", "-l", "-"};
+        ciut_main(NUM_ARRAY(argv), argv);
+    }
+}
+
+CIUT_TEST_CASE( .description="cuit test main filter.", .skip=0 ) {
+    CIUT_SECTION("test parameter list") {
+        char * argv[] = {"progname", "-l", "-f", "a"};
+        ciut_main(NUM_ARRAY(argv), argv);
+    }
+}
+
+CIUT_TEST_CASE( .description="cuit test main title.", .skip=0 ) {
+    CIUT_SECTION("test parameter list") {
+        char * argv[] = {"progname", "-l", "-t", "title"};
+        ciut_main(NUM_ARRAY(argv), argv);
+    }
+}
+
+CIUT_TEST_CASE( .description="cuit test main xml.", .skip=0 ) {
+    CIUT_SECTION("test parameter list") {
+        char * argv[] = {"progname", "-f", "xxx", "-x", "tmp-out.txt"};
+        ciut_main(NUM_ARRAY(argv), argv);
+    }
+}
+
+CIUT_TEST_CASE( .name="fail_dont_test_me", .description="cuit test main test fail function.", .skip=1 ) {
+    CIUT_SECTION("intent to test fail") {
+        REQUIRE(0 == 1);
+    }
+}
+CIUT_TEST_CASE( .description="cuit test main show fail message in log file.", .skip=0 ) {
+    CIUT_SECTION("test parameter list") {
+        char * argv[] = {"progname", "-c", "-f", "fail_dont_test_me"};
+        ciut_main(NUM_ARRAY(argv), argv);
+    }
+    CIUT_SECTION("test parameter list") {
+        char * argv[] = {"progname", "-x", "tmp-log.txt", "-f", "dont_test_me"};
+        ciut_main(NUM_ARRAY(argv), argv);
+    }
+}
+
+#if (CIUT_HANDLE_SIGSEGV == 1)
+CIUT_TEST_CASE( .name="segm_dont_test_me", .description="cuit test main test fail function.", .skip=1 ) {
+    CIUT_SECTION("intent to test fail") {
+        REQUIRE(0 == 1);
+    }
+}
+CIUT_TEST_CASE( .description="cuit test main test segmentation fault.", .skip=0 ) {
+    CIUT_SECTION("test parameter list") {
+        char * argv[] = {"progname", "-c", "-f", "segm_dont_test_me"};
+        ciut_main(NUM_ARRAY(argv), argv);
+    }
+}
+#endif // CIUT_HANDLE_SIGSEGV
+
+CIUT_TEST_CASE( .description="cuit test main unknown.", .skip=0 ) {
+    CIUT_SECTION("test parameter list") {
+        char * argv[] = {"progname", "-l", "-a", "tmp-log.txt"};
+        ciut_main(NUM_ARRAY(argv), argv);
+    }
+}
+
+#ifdef __cplusplus
+CIUT_TEST_CASE( .description="cuit test main c++ exception.", .skip=0 ) {
+    CIUT_SECTION("test parameter c++ exception") {
+        char * argv[] = {"progname", "-c" "-f", "cpp-throw"};
+        ciut_main(NUM_ARRAY(argv), argv);
+    }
+    CIUT_SECTION("test parameter c++ exception") {
+        char * argv[] = {"progname", "-x", "tmp-log.txt", "-f", "cpp-throw"};
+        ciut_main(NUM_ARRAY(argv), argv);
+    }
+}
+#endif // __cplusplus
 
 #endif /* CIUT_PLACE_MAIN */
 
