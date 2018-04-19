@@ -579,8 +579,8 @@ typedef struct _ciut_record_t {
         psuite->cb_log(psuite->fp_log, CIUT_LOG_SUITE_END, title);
         if (! flg_list) {
             int szlst = CIUT_ARRAY_SIZE(list_failed);
-            int idx;
-            if (idx > 0) {
+            int idx = 0;
+            if (szlst > 0) {
                 fprintf(stdout, CUIT_LOGHDR "List of FAILED tests (total %d):\n", szlst);
                 for(i = 0; i < szlst; i ++) {
                     idx = CIUT_ARRAY_GET(list_failed,int,i);
