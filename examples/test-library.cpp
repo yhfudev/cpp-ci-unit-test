@@ -112,7 +112,7 @@ TEST_CASE( .name="ciutsio", .description="Test ciut sio.", .skip=0 ) {
     }
 }
 
-#if 1
+#if ! (defined(_WIN32) || defined(__CYGWIN__) || defined(__APPLE__))
 TEST_CASE( .name="ciutsio", .description="Test ciut sio.", .skip=0 ) {
     SECTION("test create_file_namepipe") {
         int ret;
@@ -144,7 +144,7 @@ TEST_CASE( .name="ciutsio", .description="Test ciut sio.", .skip=0 ) {
         }
     }
 }
-#endif // 0
+#endif
 
 #if ! (defined(_WIN32) || defined(__CYGWIN__) || defined(__APPLE__))
 // test uclog.h

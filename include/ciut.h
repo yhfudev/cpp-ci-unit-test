@@ -352,6 +352,7 @@ typedef struct _ciut_record_t {
 
     /**
      * \brief the filer function
+     * \return 1 on matched, 0 on mismatch
      */
     inline static char filter_match (const char *pattern, const char * desc)
     {
@@ -360,6 +361,9 @@ typedef struct _ciut_record_t {
         }
         if (NULL == desc) {
             desc = "";
+        }
+        if (0 == strcmp("all", pattern)) {
+            return 1;
         }
         assert (NULL != desc);
         if (NULL != strstr(desc, pattern)) {
@@ -724,7 +728,7 @@ CIUT_TEST_CASE( .name="fail_dont_test_me", .description="cuit test main test fai
         REQUIRE(0 == 1);
     }
 }
-CIUT_TEST_CASE( .description="cuit test main show fail message in log file.", .skip=0 ) {
+CIUT_TEST_CASE( .description="cuit test main show fail message in log file.", .skip=DEBUG ) {
     CIUT_SECTION("test parameter list") {
         char * argv[] = {"progname", "-c", "-f", "fail_dont_test_me"};
         ciut_main(NUM_ARRAY(argv), argv);
@@ -741,7 +745,7 @@ CIUT_TEST_CASE( .name="segm_dont_test_me", .description="cuit test main test fai
         REQUIRE(0 == 1);
     }
 }
-CIUT_TEST_CASE( .description="cuit test main test segmentation fault.", .skip=0 ) {
+CIUT_TEST_CASE( .description="cuit test main test segmentation fault.", .skip=DEBUG ) {
     CIUT_SECTION("test parameter list") {
         char * argv[] = {"progname", "-c", "-f", "segm_dont_test_me"};
         ciut_main(NUM_ARRAY(argv), argv);
