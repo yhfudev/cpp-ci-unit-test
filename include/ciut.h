@@ -36,25 +36,25 @@
 #define CIUT_ARRAY_MAX(p) (*((size_t *)(p)))
 // the current stored items
 #define CIUT_ARRAY_SIZE(p) (*(((size_t *)(p))+1))
-#define CIUT_ARRAY_INIT(p,type,rough_size) ( \
-    ((p)=malloc(CIUT_ARRAY_SPACE(type,rough_size)))? \
-        ((CIUT_ARRAY_SIZE(p)=0),(CIUT_ARRAY_MAX(p)=(rough_size)),0) \
-        :1 \
-        )
 
 // confirm that the array have total slots
 #define CIUT_ARRAY_RESERVE_SIZE(p,type,size) ( \
     (p)?( \
-            (CIUT_ARRAY_SIZE(p)<(size))? \
+            (CIUT_ARRAY_MAX(p)<(size))? \
                 (((p)=realloc((p),CIUT_ARRAY_SPACE(type,size)))?(CIUT_ARRAY_MAX(p)=(size),(p)):(NULL)) \
                 :(p) \
         ) \
-       :(((p)=malloc(CIUT_ARRAY_SPACE(type,size)))?(CIUT_ARRAY_MAX(p)=(size),(p)):(NULL)) \
+       :(((p)=malloc(CIUT_ARRAY_SPACE(type,size)))?(CIUT_ARRAY_MAX(p)=(size),CIUT_ARRAY_SIZE(p)=(0),(p)):(NULL)) \
   )
+
+#define CIUT_ARRAY_INIT(p,type,rough_size) \
+    ((p)=NULL, CIUT_ARRAY_RESERVE_SIZE(p,type,rough_size) )
 #define CIUT_ARRAY_PUT(p,type,pos,v) CIUT_ARRAY_RESERVE_SIZE(p,type,(pos+1)),(*((type *)(((char *)p)+CIUT_ARRAY_SPACE(type,pos))) = (v))
-#define CIUT_ARRAY_GET(p,type,pos)   (*((type *)(((char *)p)+CIUT_ARRAY_SPACE(type,pos))))
+#define CIUT_ARRAY_GET(p,type,pos)   (CIUT_ARRAY_RESERVE_SIZE(p,type,(pos+1))==0, *((type *)(((char *)p)+CIUT_ARRAY_SPACE(type,pos))))
 #define CIUT_ARRAY_APPEND(p,type,v)  (CIUT_ARRAY_PUT(p,type,CIUT_ARRAY_SIZE(p),v), CIUT_ARRAY_SIZE(p)++)
 //#define CIUT_ARRAY_FOREACH(p,type,i,val) for(i=0;((val)=CIUT_ARRAY_GET(p,type,i)),(i<CIUT_ARRAY_SIZE(p));i++)
+
+#define CIUT_ARRAY_CLEAR(p) ((p)?(free(p),(p)=0):(0))
 
 
 #define CIUT_LOG_SUITE_START  0x01
@@ -595,6 +595,7 @@ typedef struct _ciut_record_t {
             fprintf(stdout, CUIT_LOGHDR "   passed cases: %" PRIuSZ "\n", psuite->cnt_total - psuite->cnt_failed - psuite->cnt_skipped);
             fprintf(stdout, CUIT_LOGHDR "   failed cases: %" PRIuSZ "\n", psuite->cnt_failed);
         }
+        CIUT_ARRAY_CLEAR(list_failed);
         if ((NULL != psuite->fp_log) && (stdout != psuite->fp_log)) {
             fclose((FILE *)psuite->fp_log);
         }
@@ -767,10 +768,11 @@ CIUT_TEST_CASE( .description="cuit test main unknown.", .skip=0 ) {
 }
 
 CIUT_TEST_CASE( .description="cuit test array", .skip=0 ) {
+    int i;
+    void * list_failed = NULL;
     CIUT_SECTION("test array datastructure") {
 #define _CIUT_TEST_MAX 100
-        int i;
-        void * list_failed = NULL; // the list of index of all of failed tests
+        list_failed = NULL;
         CIUT_ARRAY_INIT(list_failed,int,10);
         for (i = 0; i < _CIUT_TEST_MAX; i ++) {
             CIUT_ARRAY_APPEND(list_failed,int,(int)(i));
@@ -781,6 +783,43 @@ CIUT_TEST_CASE( .description="cuit test array", .skip=0 ) {
         for (i = 0; i < _CIUT_TEST_MAX; i ++) {
             CIUT_ASSERT((int)i == CIUT_ARRAY_GET(list_failed,int,i));
         }
+        CIUT_ARRAY_CLEAR(list_failed);
+    }
+    CIUT_SECTION("test array boundary checking") {
+        unsigned char *p;
+        unsigned char *p_begin;
+        unsigned char *p_end;
+#define CIUT_ARRAY_TAIL_MAGIC 0x7B
+        list_failed = NULL;
+        CIUT_ARRAY_INIT(list_failed,int,_CIUT_TEST_MAX*10);
+
+        // fill the outside of data to be patterns
+        p_begin = (unsigned char *)list_failed + CIUT_ARRAY_SPACE(int,_CIUT_TEST_MAX);
+        p_end = (unsigned char *)list_failed + CIUT_ARRAY_SPACE(int,_CIUT_TEST_MAX*10);
+        memset(p_begin, CIUT_ARRAY_TAIL_MAGIC, p_end - p_begin);
+
+        for (i = 0; i < _CIUT_TEST_MAX; i ++) {
+            CIUT_ARRAY_APPEND(list_failed,int,(int)(i));
+        }
+
+        CIUT_LOG("array max=%d(MAX=%d), size=%d", CIUT_ARRAY_MAX(list_failed), _CIUT_TEST_MAX, CIUT_ARRAY_SIZE(list_failed));
+        CIUT_ASSERT(_CIUT_TEST_MAX == CIUT_ARRAY_SIZE(list_failed));
+        CIUT_ASSERT(_CIUT_TEST_MAX*10 <= CIUT_ARRAY_MAX(list_failed));
+        for (i = 0; i < _CIUT_TEST_MAX; i ++) {
+            CIUT_ASSERT((int)i == CIUT_ARRAY_GET(list_failed,int,i));
+        }
+        p_begin = (unsigned char *)list_failed + CIUT_ARRAY_SPACE(int,_CIUT_TEST_MAX);
+        p_end = (unsigned char *)list_failed + CIUT_ARRAY_SPACE(int,_CIUT_TEST_MAX*10);
+        i = 0;
+        for (p = p_begin; p < p_end; p ++) {
+            if (CIUT_ARRAY_TAIL_MAGIC != *p) {
+                CIUT_LOG("ERR: buffer(%p) boundary[%d] error @ %p = 0x%02X", list_failed, i, p, (unsigned int)(*p));
+            }
+            CIUT_ASSERT(CIUT_ARRAY_TAIL_MAGIC == *p);
+            i ++;
+        }
+        CIUT_ARRAY_CLEAR(list_failed);
+        //CIUT_ASSERT(0 == 1);
     }
 }
 
