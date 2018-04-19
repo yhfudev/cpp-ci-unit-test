@@ -728,7 +728,7 @@ CIUT_TEST_CASE( .name="fail_dont_test_me", .description="cuit test main test fai
         REQUIRE(0 == 1);
     }
 }
-CIUT_TEST_CASE( .description="cuit test main show fail message in log file.", .skip=DEBUG ) {
+CIUT_TEST_CASE( .description="cuit test main show fail message in log file.", .skip=0 ) {
     CIUT_SECTION("test parameter list") {
         char * argv[] = {"progname", "-c", "-f", "fail_dont_test_me"};
         ciut_main(NUM_ARRAY(argv), argv);
@@ -745,7 +745,7 @@ CIUT_TEST_CASE( .name="segm_dont_test_me", .description="cuit test main test fai
         REQUIRE(0 == 1);
     }
 }
-CIUT_TEST_CASE( .description="cuit test main test segmentation fault.", .skip=DEBUG ) {
+CIUT_TEST_CASE( .description="cuit test main test segmentation fault.", .skip=0 ) {
     CIUT_SECTION("test parameter list") {
         char * argv[] = {"progname", "-c", "-f", "segm_dont_test_me"};
         ciut_main(NUM_ARRAY(argv), argv);
