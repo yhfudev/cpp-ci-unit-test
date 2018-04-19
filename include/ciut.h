@@ -221,7 +221,7 @@ typedef struct _ciut_record_t {
 
     #define CIUT_LOG(fmt, ...) \
         assert (NULL != psuite->cb_log); \
-        psuite->cb_log(psuite->fp_log, CIUT_LOG_CASE_ASSERT, "[%s():%d:%s] " fmt "\n", __FUNCTION__, __LINE__, __FILE__,  __VA_ARGS__)
+        psuite->cb_log(psuite->fp_log, CIUT_LOG_CASE_ASSERT, "[%s():%s:%d] " fmt "\n", __FUNCTION__, __FILE__, __LINE__,  __VA_ARGS__)
 
     #define CIUT_SECTION(msg) CIUT_LOG ("SECTION: %s", msg);
 
@@ -509,7 +509,7 @@ typedef struct _ciut_record_t {
 
             if (((filter == NULL) && ctc_cur->skip) || (0 == filter_match(filter, ctc_cur->name)) ) {
                 psuite->cnt_skipped ++;
-                snprintf(msgbuf, sizeof(msgbuf), "skip %s at (%d:%s)", ctc_cur->name, ctc_cur->line, ctc_cur->file);
+                snprintf(msgbuf, sizeof(msgbuf), "skip %s at (%s:%d)", ctc_cur->name, ctc_cur->file, ctc_cur->line);
                 psuite->cb_log(psuite->fp_log, CIUT_LOG_CASE_ASSERT, msgbuf);
                 psuite->cb_log(psuite->fp_log, CIUT_LOG_CASE_SKIPED, ctc_cur->name);
                 continue;
@@ -568,11 +568,11 @@ typedef struct _ciut_record_t {
 
         psuite->cb_log(psuite->fp_log, CIUT_LOG_SUITE_END, title);
         if (! flg_list) {
-            fprintf(stdout, CUIT_LOGHDR "size of failed list: %d\n", CUIT_ARRAY_SIZE(list_failed));
-            if (CUIT_ARRAY_SIZE(list_failed) > 0) {
-                int idx;
-                fprintf(stdout, CUIT_LOGHDR "List of FAILED tests:\n");
-                for(i = 0; i < CUIT_ARRAY_SIZE(list_failed); i ++) {
+            int szlst = CUIT_ARRAY_SIZE(list_failed);
+            int idx;
+            if (idx > 0) {
+                fprintf(stdout, CUIT_LOGHDR "List of FAILED tests (total %d):\n", szlst);
+                for(i = 0; i < szlst; i ++) {
                     idx = CUIT_ARRAY_GET(list_failed,int,i);
                     ctc_cur = ctc_begin + idx;
                     fprintf(stdout, CUIT_LOGHDR "% 3" PRIuSZ ") %s --%s %s (%s:%d)\n", (idx + 1), ctc_cur->name, (ctc_cur->skip?" [skip]":""), ctc_cur->description, ctc_cur->file, ctc_cur->line);
