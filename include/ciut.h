@@ -26,6 +26,37 @@
 // user defined, a local macro defined to 1 to store the library inside a c file, use once
 //#define CIUT_PLACE_MAIN 1
 
+
+// the structure of the buffer:
+// size_t n_item_space; size_t n_items; (type)first_item, ...
+// return the byte size for each item
+//#define CIUT_ARRAY_UINI(p) (*(((size_t *)(p))+1))
+#define CIUT_ARRAY_SPACE(type,rough_size) (sizeof(size_t)*2 + sizeof(type)*(rough_size))
+// the max slots for items
+#define CIUT_ARRAY_MAX(p) (*((size_t *)(p)))
+// the current stored items
+#define CIUT_ARRAY_SIZE(p) (*(((size_t *)(p))+1))
+#define CIUT_ARRAY_INIT(p,type,rough_size) ( \
+    ((p)=malloc(CIUT_ARRAY_SPACE(type,rough_size)))? \
+        ((CIUT_ARRAY_SIZE(p)=0),(CIUT_ARRAY_MAX(p)=(rough_size)),0) \
+        :1 \
+        )
+
+// confirm that the array have total slots
+#define CIUT_ARRAY_RESERVE_SIZE(p,type,size) ( \
+    (p)?( \
+            (CIUT_ARRAY_SIZE(p)<(size))? \
+                (((p)=realloc((p),CIUT_ARRAY_SPACE(type,size)))?(CIUT_ARRAY_MAX(p)=(size),(p)):(NULL)) \
+                :(p) \
+        ) \
+       :(((p)=malloc(CIUT_ARRAY_SPACE(type,size)))?(CIUT_ARRAY_MAX(p)=(size),(p)):(NULL)) \
+  )
+#define CIUT_ARRAY_PUT(p,type,pos,v) CIUT_ARRAY_RESERVE_SIZE(p,type,(pos+1)),(*((type *)(((char *)p)+CIUT_ARRAY_SPACE(type,pos))) = (v))
+#define CIUT_ARRAY_GET(p,type,pos)   (*((type *)(((char *)p)+CIUT_ARRAY_SPACE(type,pos))))
+#define CIUT_ARRAY_APPEND(p,type,v)  (CIUT_ARRAY_PUT(p,type,CIUT_ARRAY_SIZE(p),v), CIUT_ARRAY_SIZE(p)++)
+//#define CIUT_ARRAY_FOREACH(p,type,i,val) for(i=0;((val)=CIUT_ARRAY_GET(p,type,i)),(i<CIUT_ARRAY_SIZE(p));i++)
+
+
 #define CIUT_LOG_SUITE_START  0x01
 #define CIUT_LOG_SUITE_END    0x02
 #define CIUT_LOG_CASE_START   0x03
@@ -402,32 +433,7 @@ typedef struct _ciut_record_t {
         struct timeval tv_end;
 
         void * list_failed = NULL; // the list of index of all of failed tests
-        // the structure of the buffer:
-        // size_t n_item_space; size_t n_items; (type)first_item, ...
-        // return the byte size for each item
-        //#define CUIT_ARRAY_UINI(p) (*(((size_t *)(p))+1))
-        #define CUIT_ARRAY_SPACE(type,rough_size) (sizeof(size_t)*2 + sizeof(type)*(rough_size))
-        // the max slots for items
-        #define CUIT_ARRAY_MAX(p) (*((size_t *)(p)))
-        // the current stored items
-        #define CUIT_ARRAY_SIZE(p) (*(((size_t *)(p))+1))
-        #define CUIT_ARRAY_INIT(p,type,rough_size) ( \
-            ((p)=malloc(CUIT_ARRAY_SPACE(type,rough_size)))? \
-                ((CUIT_ARRAY_SIZE(p)=0),(CUIT_ARRAY_MAX(p)=(rough_size)),0) \
-                :1 \
-                )
-
-        // confirm that the array have total slots
-        #define CUIT_ARRAY_RESERVE_SIZE(p,type,size) ( \
-            (p)?((CUIT_ARRAY_SIZE(p)<(size))?((p)=realloc((p),CUIT_ARRAY_SPACE(type,size))):(p)) \
-               :((p)=malloc(sizeof(size_t)*2 + sizeof(type)*(size))) \
-          )
-        #define CUIT_ARRAY_PUT(p,type,pos,v) CUIT_ARRAY_RESERVE_SIZE(p,type,(pos+1)),(*((type *)(((char *)p)+CUIT_ARRAY_SPACE(type,pos))) = (v))
-        #define CUIT_ARRAY_GET(p,type,pos)   (*((type *)(((char *)p)+CUIT_ARRAY_SPACE(type,pos))))
-        #define CUIT_ARRAY_APPEND(p,type,v)  (CUIT_ARRAY_PUT(p,type,CUIT_ARRAY_SIZE(p),v), CUIT_ARRAY_SIZE(p)++)
-        //#define CUIT_ARRAY_FOREACH(p,type,i,val) for(i=0;((val)=CUIT_ARRAY_GET(p,type,i)),(i<CUIT_ARRAY_SIZE(p));i++)
-
-        CUIT_ARRAY_INIT(list_failed,int,10);
+        CIUT_ARRAY_INIT(list_failed,int,10);
 
         assert (psuite);
         memset (psuite, 0, sizeof(*psuite));
@@ -561,7 +567,7 @@ typedef struct _ciut_record_t {
                 psuite->cb_log(psuite->fp_log, CIUT_LOG_CASE_FAILED, msgbuf);
                 psuite->cnt_failed ++;
                 // record the index of test
-                CUIT_ARRAY_APPEND(list_failed,int,(int)(ctc_cur - ctc_begin));
+                CIUT_ARRAY_APPEND(list_failed,int,(int)(ctc_cur - ctc_begin));
 
             } else {
                 snprintf(msgbuf, sizeof(msgbuf), "%s time(%ld.%06ld) at (%s:%d)", ctc_cur->name, tv_end.tv_sec, tv_end.tv_usec, ctc_cur->file, ctc_cur->line);
@@ -572,12 +578,12 @@ typedef struct _ciut_record_t {
 
         psuite->cb_log(psuite->fp_log, CIUT_LOG_SUITE_END, title);
         if (! flg_list) {
-            int szlst = CUIT_ARRAY_SIZE(list_failed);
+            int szlst = CIUT_ARRAY_SIZE(list_failed);
             int idx;
             if (idx > 0) {
                 fprintf(stdout, CUIT_LOGHDR "List of FAILED tests (total %d):\n", szlst);
                 for(i = 0; i < szlst; i ++) {
-                    idx = CUIT_ARRAY_GET(list_failed,int,i);
+                    idx = CIUT_ARRAY_GET(list_failed,int,i);
                     ctc_cur = ctc_begin + idx;
                     fprintf(stdout, CUIT_LOGHDR "% 3" PRIuSZ ") %s --%s %s (%s:%d)\n", (idx + 1), ctc_cur->name, (ctc_cur->skip?" [skip]":""), ctc_cur->description, ctc_cur->file, ctc_cur->line);
                 }
@@ -757,6 +763,24 @@ CIUT_TEST_CASE( .description="cuit test main unknown.", .skip=0 ) {
     CIUT_SECTION("test parameter list") {
         char * argv[] = {"progname", "-l", "-a", "tmp-log.txt"};
         ciut_main(NUM_ARRAY(argv), argv);
+    }
+}
+
+CIUT_TEST_CASE( .description="cuit test array", .skip=0 ) {
+    CIUT_SECTION("test array datastructure") {
+#define _CIUT_TEST_MAX 100
+        int i;
+        void * list_failed = NULL; // the list of index of all of failed tests
+        CIUT_ARRAY_INIT(list_failed,int,10);
+        for (i = 0; i < _CIUT_TEST_MAX; i ++) {
+            CIUT_ARRAY_APPEND(list_failed,int,(int)(i));
+        }
+        CIUT_LOG("array max=%d(MAX=%d), size=%d", CIUT_ARRAY_MAX(list_failed), _CIUT_TEST_MAX, CIUT_ARRAY_SIZE(list_failed));
+        CIUT_ASSERT(_CIUT_TEST_MAX == CIUT_ARRAY_SIZE(list_failed));
+        CIUT_ASSERT(_CIUT_TEST_MAX <= CIUT_ARRAY_MAX(list_failed));
+        for (i = 0; i < _CIUT_TEST_MAX; i ++) {
+            CIUT_ASSERT((int)i == CIUT_ARRAY_GET(list_failed,int,i));
+        }
     }
 }
 
