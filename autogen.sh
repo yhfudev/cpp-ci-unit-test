@@ -31,7 +31,7 @@ autoconf
 autoreconf -f -i -Wall,no-obsolete
 autoreconf -f -i -Wall,no-obsolete
 
-if [ 0 = 1 ]; then
+if [ 1 = 1 ]; then
   ./configure --disable-debug --disable-coverage --disable-valgrind
 
   make clean
