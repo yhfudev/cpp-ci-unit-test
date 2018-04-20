@@ -69,7 +69,7 @@ TEST_CASE( .name="log-MLT", .description="Test log.", .skip=0 ) {
 }
 
 static int
-cb_cuit_check_output_sio (FILE * outf, void * user_arg)
+cb_ciut_check_output_sio (FILE * outf, void * user_arg)
 {
     char * msg = (char *)user_arg;
     assert (NULL != msg);
@@ -102,12 +102,12 @@ err2cstr_cstd(int err)
 
 
 TEST_CASE( .name="ciutsio", .description="Test ciut sio.", .skip=0 ) {
-    SECTION("test cuit_check_output") {
+    SECTION("test ciut_check_output") {
 #define CSTR_TEST1 ""
-        REQUIRE(0 == cuit_check_output(cb_cuit_check_output_sio, (void *)CSTR_TEST1, CSTR_TEST1));
+        REQUIRE(0 == ciut_check_output(cb_ciut_check_output_sio, (void *)CSTR_TEST1, CSTR_TEST1));
 #undef CSTR_TEST1
 #define CSTR_TEST1 "this is my test string 1123243."
-        REQUIRE(0 == cuit_check_output(cb_cuit_check_output_sio, (void *)CSTR_TEST1, CSTR_TEST1));
+        REQUIRE(0 == ciut_check_output(cb_ciut_check_output_sio, (void *)CSTR_TEST1, CSTR_TEST1));
 #undef CSTR_TEST1
     }
 }

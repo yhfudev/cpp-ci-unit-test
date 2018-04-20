@@ -9,7 +9,7 @@
 #ifndef _UNI_C_PORTING_H
 #define _UNI_C_PORTING_H 1
 
-#define CUIT_LOGHDR "{ciut} "
+#define CIUT_LOGHDR "{ciut} "
 
 #include <stdlib.h>    /* size_t */
 #include <sys/types.h> /* ssize_t pid_t off64_t */

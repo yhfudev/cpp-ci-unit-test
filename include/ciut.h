@@ -30,7 +30,6 @@
 // the structure of the buffer:
 // size_t n_item_space; size_t n_items; (type)first_item, ...
 // return the byte size for each item
-//#define CIUT_ARRAY_UINI(p) (*(((size_t *)(p))+1))
 #define CIUT_ARRAY_SPACE(type,rough_size) (sizeof(size_t)*2 + sizeof(type)*(rough_size))
 // the max slots for items
 #define CIUT_ARRAY_MAX(p) (*((size_t *)(p)))
@@ -275,19 +274,19 @@ typedef struct _ciut_record_t {
         assert (NULL != fp);
         switch (type) {
         case CIUT_LOG_CASE_SUCCESS:
-            fprintf((FILE *)fp, CUIT_LOGHDR "PASS: %s\n", msg);
+            fprintf((FILE *)fp, CIUT_LOGHDR "PASS: %s\n", msg);
             break;
         case CIUT_LOG_CASE_SKIPED:
-            fprintf((FILE *)fp, CUIT_LOGHDR "SKIP: %s\n", msg);
+            fprintf((FILE *)fp, CIUT_LOGHDR "SKIP: %s\n", msg);
             break;
         case CIUT_LOG_CASE_FAILED:
-            fprintf((FILE *)fp, CUIT_LOGHDR "FAIL: %s\n", msg);
+            fprintf((FILE *)fp, CIUT_LOGHDR "FAIL: %s\n", msg);
             break;
         case CIUT_LOG_CASE_ASSERT:
         {
             va_list args;
             va_start (args, msg);
-            fprintf((FILE *)fp, CUIT_LOGHDR);
+            fprintf((FILE *)fp, CIUT_LOGHDR);
             vfprintf((FILE *)fp, msg, args);
             fprintf((FILE *)fp, "\n");
             va_end (args);
@@ -296,7 +295,7 @@ typedef struct _ciut_record_t {
         case CIUT_LOG_CASE_START:
             break;
         case CIUT_LOG_SUITE_START:
-            fprintf((FILE *)fp, CUIT_LOGHDR "Test Suite: %s\n", msg);
+            fprintf((FILE *)fp, CIUT_LOGHDR "Test Suite: %s\n", msg);
             break;
         case CIUT_LOG_SUITE_END:
             break;
@@ -464,7 +463,7 @@ typedef struct _ciut_record_t {
             } else if ((0 == strcmp("-", argv[i])) || (0 == strcmp("-c", argv[i]))) {
                 fn_xml = NULL;
             } else {
-                fprintf(stderr, CUIT_LOGHDR "Error: unknown parameter %s.\n", argv[i]);
+                fprintf(stderr, CIUT_LOGHDR "Error: unknown parameter %s.\n", argv[i]);
                 return (1);
             }
         }
@@ -478,11 +477,11 @@ typedef struct _ciut_record_t {
             }
             psuite->fp_log = fopen(fn_xml, "w+");
             if (NULL == psuite->fp_log) {
-                fprintf(stderr, CUIT_LOGHDR "Error in open file %s.\n", fn_xml);
+                fprintf(stderr, CIUT_LOGHDR "Error in open file %s.\n", fn_xml);
                 exit(1);
             }
             psuite->cb_log = ciut_cb_log_xml;
-            fprintf(stdout, CUIT_LOGHDR "Created XML file %s.\n", fn_xml);
+            fprintf(stdout, CIUT_LOGHDR "Created XML file %s.\n", fn_xml);
         }
 
         assert (psuite);
@@ -513,7 +512,7 @@ typedef struct _ciut_record_t {
 
             if (flg_list) {
                 // list the item
-                fprintf (stdout, CUIT_LOGHDR "% 3" PRIuSZ ") %s --%s %s\n", psuite->cnt_total, ctc_cur->name, (ctc_cur->skip?" [skip]":""), ctc_cur->description);
+                fprintf (stdout, CIUT_LOGHDR "% 3" PRIuSZ ") %s --%s %s\n", psuite->cnt_total, ctc_cur->name, (ctc_cur->skip?" [skip]":""), ctc_cur->description);
                 continue;
             }
 
@@ -581,19 +580,19 @@ typedef struct _ciut_record_t {
             int szlst = CIUT_ARRAY_SIZE(list_failed);
             int idx = 0;
             if (szlst > 0) {
-                fprintf(stdout, CUIT_LOGHDR "List of FAILED tests (total %d):\n", szlst);
+                fprintf(stdout, CIUT_LOGHDR "List of FAILED tests (total %d):\n", szlst);
                 for(i = 0; i < szlst; i ++) {
                     idx = CIUT_ARRAY_GET(list_failed,int,i);
                     ctc_cur = ctc_begin + idx;
-                    fprintf(stdout, CUIT_LOGHDR "% 3" PRIuSZ ") %s --%s %s (%s:%d)\n", (idx + 1), ctc_cur->name, (ctc_cur->skip?" [skip]":""), ctc_cur->description, ctc_cur->file, ctc_cur->line);
+                    fprintf(stdout, CIUT_LOGHDR "% 3" PRIuSZ ") %s --%s %s (%s:%d)\n", (idx + 1), ctc_cur->name, (ctc_cur->skip?" [skip]":""), ctc_cur->description, ctc_cur->file, ctc_cur->line);
                 }
             }
 
-            fprintf(stdout, CUIT_LOGHDR "Results:\n");
-            fprintf(stdout, CUIT_LOGHDR "    total cases: %" PRIuSZ "\n", psuite->cnt_total);
-            fprintf(stdout, CUIT_LOGHDR "  skipped cases: %" PRIuSZ "\n", psuite->cnt_skipped);
-            fprintf(stdout, CUIT_LOGHDR "   passed cases: %" PRIuSZ "\n", psuite->cnt_total - psuite->cnt_failed - psuite->cnt_skipped);
-            fprintf(stdout, CUIT_LOGHDR "   failed cases: %" PRIuSZ "\n", psuite->cnt_failed);
+            fprintf(stdout, CIUT_LOGHDR "Results:\n");
+            fprintf(stdout, CIUT_LOGHDR "    total cases: %" PRIuSZ "\n", psuite->cnt_total);
+            fprintf(stdout, CIUT_LOGHDR "  skipped cases: %" PRIuSZ "\n", psuite->cnt_skipped);
+            fprintf(stdout, CIUT_LOGHDR "   passed cases: %" PRIuSZ "\n", psuite->cnt_total - psuite->cnt_failed - psuite->cnt_skipped);
+            fprintf(stdout, CIUT_LOGHDR "   failed cases: %" PRIuSZ "\n", psuite->cnt_failed);
         }
         CIUT_ARRAY_CLEAR(list_failed);
         if ((NULL != psuite->fp_log) && (stdout != psuite->fp_log)) {
