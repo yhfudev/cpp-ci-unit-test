@@ -11,7 +11,7 @@
 #define CIUT_PLACE_MAIN 1 /**< user defined, a local macro defined to 1 to place main() inside a c file, use once */
 #include <ciut.h>
 
-int main(int argc, char * argv[])
+int main(int argc, const char * argv[])
 {
     return ciut_main(argc, argv);
 }

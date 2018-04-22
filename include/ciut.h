@@ -366,7 +366,7 @@ typedef struct _ciut_record_t {
         }
     }
 
-    inline static void usage(char *progname)
+    inline static void usage(const char *progname)
     {
         fprintf(stderr, "Usage:\n");
         fprintf(stderr, "    %s <options>\n", progname);
@@ -418,7 +418,7 @@ typedef struct _ciut_record_t {
 
     CIUT_TEST_CASE2(test_case_placeholder, .name="placeholder", .description="A place holder for internal use", .skip=1){} // the place holder
 
-    inline static int ciut_main(size_t argc, char * argv[])
+    inline static int ciut_main(size_t argc, const char * argv[])
     {
         char msgbuf[200];
         const char * title = "Unit Test";
@@ -696,35 +696,35 @@ CIUT_TEST_CASE( .description="cuit test misc func.", .skip=0 ) {
 #endif
 CIUT_TEST_CASE( .description="cuit test main help.", .skip=0 ) {
     CIUT_SECTION("test parameter help") {
-        char * argv[] = {"progname", "-h"};
+        const char * argv[] = {"progname", "-h"};
         ciut_main(NUM_ARRAY(argv), argv);
     }
 }
 
 CIUT_TEST_CASE( .description="cuit test main list.", .skip=0 ) {
     CIUT_SECTION("test parameter list") {
-        char * argv[] = {"progname", "-l", "-"};
+        const char * argv[] = {"progname", "-l", "-"};
         ciut_main(NUM_ARRAY(argv), argv);
     }
 }
 
 CIUT_TEST_CASE( .description="cuit test main filter.", .skip=0 ) {
     CIUT_SECTION("test parameter list") {
-        char * argv[] = {"progname", "-l", "-f", "a"};
+        const char * argv[] = {"progname", "-l", "-f", "a"};
         ciut_main(NUM_ARRAY(argv), argv);
     }
 }
 
 CIUT_TEST_CASE( .description="cuit test main title.", .skip=0 ) {
     CIUT_SECTION("test parameter list") {
-        char * argv[] = {"progname", "-l", "-t", "title"};
+        const char * argv[] = {"progname", "-l", "-t", "title"};
         ciut_main(NUM_ARRAY(argv), argv);
     }
 }
 
 CIUT_TEST_CASE( .description="cuit test main xml.", .skip=0 ) {
     CIUT_SECTION("test parameter list") {
-        char * argv[] = {"progname", "-f", "xxx", "-x", "tmp-out.txt"};
+        const char * argv[] = {"progname", "-f", "xxx", "-x", "tmp-out.txt"};
         ciut_main(NUM_ARRAY(argv), argv);
     }
 }
@@ -736,11 +736,11 @@ CIUT_TEST_CASE( .name="fail_dont_test_me", .description="cuit test main test fai
 }
 CIUT_TEST_CASE( .description="cuit test main show fail message in log file.", .skip=0 ) {
     CIUT_SECTION("test parameter list") {
-        char * argv[] = {"progname", "-c", "-f", "fail_dont_test_me"};
+        const char * argv[] = {"progname", "-c", "-f", "fail_dont_test_me"};
         ciut_main(NUM_ARRAY(argv), argv);
     }
     CIUT_SECTION("test parameter list") {
-        char * argv[] = {"progname", "-x", "tmp-log.txt", "-f", "dont_test_me"};
+        const char * argv[] = {"progname", "-x", "tmp-log.txt", "-f", "dont_test_me"};
         ciut_main(NUM_ARRAY(argv), argv);
     }
 }
@@ -753,7 +753,7 @@ CIUT_TEST_CASE( .name="segm_dont_test_me", .description="cuit test main test fai
 }
 CIUT_TEST_CASE( .description="cuit test main test segmentation fault.", .skip=0 ) {
     CIUT_SECTION("test parameter list") {
-        char * argv[] = {"progname", "-c", "-f", "segm_dont_test_me"};
+        const char * argv[] = {"progname", "-c", "-f", "segm_dont_test_me"};
         ciut_main(NUM_ARRAY(argv), argv);
     }
 }
@@ -761,7 +761,7 @@ CIUT_TEST_CASE( .description="cuit test main test segmentation fault.", .skip=0 
 
 CIUT_TEST_CASE( .description="cuit test main unknown.", .skip=0 ) {
     CIUT_SECTION("test parameter list") {
-        char * argv[] = {"progname", "-l", "-a", "tmp-log.txt"};
+        const char * argv[] = {"progname", "-l", "-a", "tmp-log.txt"};
         ciut_main(NUM_ARRAY(argv), argv);
     }
 }
@@ -825,11 +825,11 @@ CIUT_TEST_CASE( .description="cuit test array", .skip=0 ) {
 #ifdef __cplusplus
 CIUT_TEST_CASE( .description="cuit test main c++ exception.", .skip=0 ) {
     CIUT_SECTION("test parameter c++ exception") {
-        char * argv[] = {"progname", "-c" "-f", "cpp-throw"};
+        const char * argv[] = {"progname", "-c" "-f", "cpp-throw"};
         ciut_main(NUM_ARRAY(argv), argv);
     }
     CIUT_SECTION("test parameter c++ exception") {
-        char * argv[] = {"progname", "-x", "tmp-log.txt", "-f", "cpp-throw"};
+        const char * argv[] = {"progname", "-x", "tmp-log.txt", "-f", "cpp-throw"};
         ciut_main(NUM_ARRAY(argv), argv);
     }
 }
