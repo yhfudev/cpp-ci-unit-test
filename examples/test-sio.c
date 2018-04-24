@@ -28,7 +28,7 @@ static int test_stub_fcntl(int fd, int cmd, ... );
 
 static void * test_stub_malloc(size_t size);
 static int test_stub_strcmp(const char *s1, const char *s2);
-static int test_stub_strncmp(const char *s1, const char *s2, size_t n);
+//static int test_stub_strncmp(const char *s1, const char *s2, size_t n);
 static int test_stub_remove(const char *pathname);
 
 static void * g_ret_malloc = NULL;
@@ -44,7 +44,7 @@ test_stub_malloc(size_t size)
 // test stub function replacements
 #define malloc      test_stub_malloc
 #define strcmp      test_stub_strcmp
-#define strncmp     test_stub_strncmp
+//#define strncmp     test_stub_strncmp
 
 #define mkfifo(a,b) test_stub_mkfifo(a,b)
 #define unlink(a)   (0)
@@ -158,12 +158,14 @@ test_stub_strcmp(const char *s1, const char *s2)
     return g_ret_strcmp;
 }
 
+#if 0
 static int g_ret_strncmp = 0;
 static int
 test_stub_strncmp(const char *s1, const char *s2, size_t n)
 {
     return g_ret_strncmp;
 }
+#endif
 
 TEST_CASE( .name="ciut-sio", .description="Test the sio internal functions." ) {
     FILE *fp_from = NULL;
@@ -206,12 +208,12 @@ TEST_CASE( .name="ciut-sio", .description="Test the sio internal functions." ) {
         g_ret_fcntl_set = -1;
         REQUIRE(-1 == create_file_namepipe(&fp_from, &fp_to));
         g_ret_fork = 1;
-        g_ret_fopen = 0;
+        g_ret_fopen = 1;
         g_ret_fcntl_get = 0;
         g_ret_fcntl_set = -1;
         REQUIRE(-1 == create_file_namepipe(&fp_from, &fp_to));
         g_ret_fork = 1;
-        g_ret_fopen = 0;
+        g_ret_fopen = 2;
         g_ret_fcntl_get = 0;
         g_ret_fcntl_set = 0;
         REQUIRE(g_ret_fork == create_file_namepipe(&fp_from, &fp_to));

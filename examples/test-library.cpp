@@ -93,13 +93,26 @@ err2cstr_cstd(int err)
         CASE(EPERM);
         CASE(EROFS);
         CASE(EXDEV);
-        //CASE(EXDEV);
-        //CASE(ELOOP);
-        //CASE(ENAMETOOLONG);
     }
     return "(unknown error)";
 }
-
+TEST_CASE( .name="error-handler-errno", .description="Test error numbers.", .skip=0 ) {
+    SECTION("Test error numbers") {
+#define CASE(err) REQUIRE(0 == strcmp(err2cstr_cstd(err), #err))
+        CASE(EACCES);
+        CASE(EEXIST);
+        CASE(ELOOP);
+        CASE(EMLINK);
+        CASE(ENAMETOOLONG);
+        CASE(ENOENT);
+        CASE(ENOSPC);
+        CASE(ENOTDIR);
+        CASE(EPERM);
+        CASE(EROFS);
+        CASE(EXDEV);
+        REQUIRE(0 == strcmp(err2cstr_cstd(-1), "(unknown error)"))
+    }
+}
 
 TEST_CASE( .name="ciut-sio", .description="Test ciut sio.", .skip=0 ) {
     SECTION("test ciut_check_output") {
@@ -144,6 +157,7 @@ TEST_CASE( .name="ciut-sio API", .description="Test ciut sio API.", .skip=0 ) {
         }
     }
 }
+#if 0
 TEST_CASE( .name="ciut-sio-internal", .description="Test ciut sio internal function.", .skip=1 ) {
     SECTION("test read_and_compare function") {
 #define CSTR_TEST "abcdefghijklmnopqrstuvwxyz"
@@ -166,7 +180,8 @@ TEST_CASE( .name="ciut-sio-internal", .description="Test ciut sio internal funct
 #undef CSTR_TEST
     }
 }
-#endif
+#endif // 0
+#endif // _WIN32
 
 #if ! (defined(_WIN32) || defined(__CYGWIN__) || defined(__APPLE__))
 // test uclog.h
