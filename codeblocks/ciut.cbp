@@ -33,7 +33,7 @@
 			<Add option="-DCIUT_ENABLED=1" />
 			<Add directory="../include" />
 		</Compiler>
-		<Unit filename="../examples/ciutexcpp.cpp" />
+		<Unit filename="../examples/ciutexecpp.cpp" />
 		<Unit filename="../examples/test-exception.cpp" />
 		<Unit filename="../examples/test-lang.c">
 			<Option compilerVar="CC" />
