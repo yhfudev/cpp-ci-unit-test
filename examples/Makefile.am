@@ -67,10 +67,10 @@ dummy.cpp:
 clean-local-dummy:
 	-rm -rf dummy.cpp
 
-#ciutexc.c:
+#ciutexec.c:
 #	echo -e "#define CIUT_PLACE_MAIN 1\n#include <ciut.h>\nint main(int argc, char * argv[]) { return ciut_main(argc, argv); }" > $@
 #clean-local-check:
-#	-rm -rf ciutexc.c
+#	-rm -rf ciutexec.c
 
 clean-local: clean-local-dummy #clean-local-check
 
@@ -78,27 +78,27 @@ clean-local: clean-local-dummy #clean-local-check
 
 AM_CFLAGS += -DCIUT_ENABLED=1
 
-#noinst_PROGRAMS= ciutexcpp ciutexc
-TESTS= ciutexcpp ciutexc
-check_PROGRAMS= ciutexcpp ciutexc
-#bin_PROGRAMS= ciutexcpp ciutexc
+#noinst_PROGRAMS= ciutexecpp ciutexec
+TESTS= ciutexecpp ciutexec
+check_PROGRAMS= ciutexecpp ciutexec
+#bin_PROGRAMS= ciutexecpp ciutexec
 
-ciutexc_SOURCES= \
-    ciutexc.c \
+ciutexec_SOURCES= \
+    ciutexec.c \
     test-lang.c \
     test-sigsegv.c \
     $(NULL)
-ciutexc_LDADD = #-lm
-ciutexc_CFLAGS = $(AM_CFLAGS) -DDOCUMENT_FOLDER=\"$(DOCUMENT_FOLDER)\"
-ciutexc_LDFLAGS = $(AM_LDFLAGS)
+ciutexec_LDADD = #-lm
+ciutexec_CFLAGS = $(AM_CFLAGS) -DDOCUMENT_FOLDER=\"$(DOCUMENT_FOLDER)\"
+ciutexec_LDFLAGS = $(AM_LDFLAGS)
 
-ciutexcpp_SOURCES= \
-    ciutexcpp.cpp \
+ciutexecpp_SOURCES= \
+    ciutexecpp.cpp \
     test-lang.c \
     test-sigsegv.c \
     test-exception.cpp \
     test-library.cpp \
     $(NULL)
-ciutexcpp_CXXFLAGS = -std=c++11 $(AM_CFLAGS) -DDOCUMENT_FOLDER=\"$(DOCUMENT_FOLDER)\"
-ciutexcpp_LDFLAGS = $(AM_LDFLAGS)
+ciutexecpp_CXXFLAGS = -std=c++11 $(AM_CFLAGS) -DDOCUMENT_FOLDER=\"$(DOCUMENT_FOLDER)\"
+ciutexecpp_LDFLAGS = $(AM_LDFLAGS)
 

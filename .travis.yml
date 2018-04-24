@@ -215,8 +215,8 @@ script:
   - if [[ ! "$TRAVIS_OS_NAME" == "osx" ]]; then make coverage CC=${CC} CXX=${CXX} ; fi
   - make check CC=${CC} CXX=${CXX}
   - if [[ ! "$TRAVIS_OS_NAME" == "osx" ]]; then make check-valgrind CC=${CC} CXX=${CXX} ; find . -name "test-suite-*.log" | xargs -n 1 cat; fi
-  - examples/ciutexcpp
-  - examples/ciutexc
+  - examples/ciutexecpp
+  - examples/ciutexec
 
 after_success:
   - if [[ ! "$TRAVIS_OS_NAME" == "osx" ]]; then bash <(curl -s https://codecov.io/bash) ; fi
