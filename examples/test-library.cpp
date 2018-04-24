@@ -101,7 +101,7 @@ err2cstr_cstd(int err)
 }
 
 
-TEST_CASE( .name="ciutsio", .description="Test ciut sio.", .skip=0 ) {
+TEST_CASE( .name="ciut-sio", .description="Test ciut sio.", .skip=0 ) {
     SECTION("test ciut_check_output") {
 #define CSTR_TEST1 ""
         REQUIRE(0 == ciut_check_output(cb_ciut_check_output_sio, (void *)CSTR_TEST1, CSTR_TEST1));
@@ -113,7 +113,7 @@ TEST_CASE( .name="ciutsio", .description="Test ciut sio.", .skip=0 ) {
 }
 
 #if ! (defined(_WIN32) || defined(__CYGWIN__) || defined(__APPLE__))
-TEST_CASE( .name="ciut-sio", .description="Test ciut sio.", .skip=0 ) {
+TEST_CASE( .name="ciut-sio API", .description="Test ciut sio API.", .skip=0 ) {
     SECTION("test create_file_namepipe") {
         int ret;
         pid_t pid;
