@@ -113,7 +113,7 @@ TEST_CASE( .name="ciutsio", .description="Test ciut sio.", .skip=0 ) {
 }
 
 #if ! (defined(_WIN32) || defined(__CYGWIN__) || defined(__APPLE__))
-TEST_CASE( .name="ciutsio", .description="Test ciut sio.", .skip=0 ) {
+TEST_CASE( .name="ciut-sio", .description="Test ciut sio.", .skip=0 ) {
     SECTION("test create_file_namepipe") {
         int ret;
         pid_t pid;
@@ -142,6 +142,28 @@ TEST_CASE( .name="ciutsio", .description="Test ciut sio.", .skip=0 ) {
             CIUT_LOG("ERR: link return %d: err=%d %s", ret, errno, err2cstr_cstd(errno));
             perror("ERR: link()");
         }
+    }
+}
+TEST_CASE( .name="ciut-sio-internal", .description="Test ciut sio internal function.", .skip=1 ) {
+    SECTION("test read_and_compare function") {
+#define CSTR_TEST "abcdefghijklmnopqrstuvwxyz"
+#define FN_TEST_TMP "/tmp/tmp-test.txt"
+        FILE *fp = NULL;
+        // create test file
+        fp = fopen(FN_TEST_TMP, "w");
+        REQUIRE(NULL != fp);
+        fprintf(fp, "%s", CSTR_TEST);
+        fclose(fp);
+
+        fp = fopen(FN_TEST_TMP, "r");
+        //fseek (fp, 0, SEEK_SET);
+        REQUIRE(0 == read_and_compare(fp, CSTR_TEST));
+        REQUIRE(-1 == read_and_compare(fp, "1" CSTR_TEST));
+        REQUIRE(1 == read_and_compare(fp, CSTR_TEST "1"));
+
+        fclose(fp);
+#undef FN_TEST_TMP
+#undef CSTR_TEST
     }
 }
 #endif

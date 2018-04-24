@@ -85,6 +85,7 @@ check_PROGRAMS= ciutexecpp ciutexec
 
 ciutexec_SOURCES= \
     ciutexec.c \
+    test-sio.c \
     test-lang.c \
     test-sigsegv.c \
     $(NULL)
@@ -94,6 +95,7 @@ ciutexec_LDFLAGS = $(AM_LDFLAGS)
 
 ciutexecpp_SOURCES= \
     ciutexecpp.cpp \
+    test-sio.c \
     test-lang.c \
     test-sigsegv.c \
     test-exception.cpp \
