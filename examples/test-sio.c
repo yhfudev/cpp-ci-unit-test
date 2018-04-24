@@ -11,6 +11,10 @@
 
 /*#define CIUT_ENABLED 1 */ /**< user defined, a global macro defined to 1 to active the unit test code */
 
+#ifdef _WIN32
+/* win32 won't support named pipe */
+
+#else /* _WIN32 */
 #if defined(CIUT_ENABLED) && (CIUT_ENABLED == 1)
 #include <ciut.h>
 
@@ -278,5 +282,5 @@ TEST_CASE( .name="ciut-sio", .description="Test the sio internal functions." ) {
 }
 
 #endif /* CIUT_ENABLED */
-
+#endif /* _WIN32 */
 
