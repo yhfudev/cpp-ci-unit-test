@@ -19,8 +19,32 @@ TEST_CASE( .name="require-micro" ) {
 }
 
 TEST_CASE( .name="float-equation", .description="Test float point equation." ) {
-    CIUT_DBL_EQUAL(0.1 + 0.2, 0.3);
-    CIUT_DBL_EQUAL(0.0, 0.0 + 0.0);
+
+    SECTION("test float plus") {
+        CIUT_DBL_EQUAL(0.1 + 0.2, 0.3);
+        CIUT_DBL_EQUAL(0.0, 0.0 + 0.0);
+    }
+    SECTION("test float minus") {
+        CIUT_DBL_EQUAL(0.3 - 0.2, 0.1);
+        CIUT_DBL_EQUAL(1.0, 1.3 - 0.3);
+    }
+    SECTION("test float div") {
+        CIUT_DBL_EQUAL(3000000.0 / 3, 1000000.0);
+        CIUT_DBL_EQUAL(300000.0 / 3, 100000.0);
+        CIUT_DBL_EQUAL(30000.0 / 3, 10000.0);
+        CIUT_DBL_EQUAL(3000.0 / 3, 1000.0);
+        CIUT_DBL_EQUAL(300.0 / 3, 100.0);
+        CIUT_DBL_EQUAL(30.0 / 3, 10.0);
+        CIUT_DBL_EQUAL(3.0 / 3, 1.0);
+        CIUT_DBL_EQUAL(0.3 / 3, 0.1);
+        CIUT_DBL_EQUAL(0.03 / 3, 0.01);
+        CIUT_DBL_EQUAL(0.003 / 3, 0.001);
+        CIUT_DBL_EQUAL(0.0003 / 3, 0.0001);
+        CIUT_DBL_EQUAL(0.00003 / 3, 0.00001);
+        CIUT_DBL_EQUAL(0.000003 / 3, 0.000001);
+        CIUT_DBL_EQUAL(0.0000003 / 3, 0.0000001);
+        CIUT_DBL_EQUAL(0.00000003 / 3, 0.00000001);
+    }
 }
 
 TEST_CASE( .name="function-macro", .description="Test the __FUNCTION__ macro." ) {
