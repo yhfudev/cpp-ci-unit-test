@@ -108,6 +108,8 @@ coverage:
 	@$(MAKE) cov-reset
 	@$(MAKE) check
 	@$(MAKE) cov-report
+	valgrind --tool=memcheck --leak-check=yes examples/ciutexec
+	valgrind --tool=memcheck --leak-check=yes examples/ciutexecpp
 
 clean-local-coverage: cov-reset-common
 #	@rm -f $(abs_top_builddir)/gcov-tool-clang

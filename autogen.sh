@@ -18,6 +18,7 @@ else
 
 touch NEWS
 touch README
+touch README.md
 touch AUTHORS
 touch ChangeLog
 touch config.h.in

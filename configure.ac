@@ -129,8 +129,8 @@ fi
 dnl where to install the doxygen-generated HTML doc
 AC_ARG_WITH(html-docdir,
             [AC_HELP_STRING([--with-html-docdir=DIR],
-                            [where to install the doxyten-generated HTML doc [PREFIX/share/doc/ciut/html]])],
-            [htmldocdir="$withval"], [htmldocdir=\$\{prefix\}/share/doc/ciut/html])
+                            [where to install the doxyten-generated HTML doc [PREFIX/share/doc/${PACKAGE_NAME}/html]])],
+            [htmldocdir="$withval"], [htmldocdir=\$\{prefix\}/share/doc/${PACKAGE_NAME}/html])
 AC_SUBST(htmldocdir)
 AM_CONDITIONAL(ENABLE_DOXYGEN_DOC,test "x$enable_doxygen_doc" = "xyes")
 

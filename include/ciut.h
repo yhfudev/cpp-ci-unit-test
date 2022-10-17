@@ -21,22 +21,22 @@
 #include "ucport.h"
 #include "uctime.h"
 
-// user defined, a global macro defined to 1 to active the unit test code
+/// user defined, a global macro defined to 1 to active the unit test code
 //#define CIUT_ENABLED 1
-// user defined, a local macro defined to 1 to store the library inside a c file, use once
+/// user defined, a local macro defined to 1 to store the library inside a c file, use once
 //#define CIUT_PLACE_MAIN 1
 
 
-// the structure of the buffer:
-// size_t n_item_space; size_t n_items; (type)first_item, ...
-// return the byte size for each item
+/// the structure of the buffer:
+/// size_t n_item_space; size_t n_items; (type)first_item, ...
+/// return the byte size for each item
 #define CIUT_ARRAY_SPACE(type,rough_size) (sizeof(size_t)*2 + sizeof(type)*(rough_size))
-// the max slots for items
+/// the max slots for items
 #define CIUT_ARRAY_MAX(p) (*((size_t *)(p)))
-// the current stored items
+/// the current stored items
 #define CIUT_ARRAY_SIZE(p) (*(((size_t *)(p))+1))
 
-// confirm that the array have total slots
+/// confirm that the array have total slots
 #define CIUT_ARRAY_RESERVE_SIZE(p,type,size) ( \
     (p)?( \
             (CIUT_ARRAY_MAX(p)<(size))? \
@@ -432,7 +432,6 @@ typedef struct _ciut_record_t {
         struct timeval tv_end;
 
         void * list_failed = NULL; // the list of index of all of failed tests
-        CIUT_ARRAY_INIT(list_failed,int,10);
 
         assert (psuite);
         memset (psuite, 0, sizeof(*psuite));
@@ -495,6 +494,9 @@ typedef struct _ciut_record_t {
         for (ctc_begin = &CIUT_RECD_NAME(test_case_placeholder); ctc_begin->magic == _CIUT_TC_MAGIC; ctc_begin --);
         ctc_begin ++;
         for (ctc_end = &CIUT_RECD_NAME(test_case_placeholder); ctc_end->magic == _CIUT_TC_MAGIC; ctc_end ++);
+
+        assert(NULL == list_failed);
+        CIUT_ARRAY_INIT(list_failed,int,10);
 
 #if (CIUT_HANDLE_SIGSEGV == 1)
         signal(SIGSEGV, sighandler_seg);
@@ -576,9 +578,10 @@ typedef struct _ciut_record_t {
         }
 
         psuite->cb_log(psuite->fp_log, CIUT_LOG_SUITE_END, title);
+        assert (CIUT_ARRAY_SIZE(list_failed) == psuite->cnt_failed);
         if (! flg_list) {
-            int szlst = CIUT_ARRAY_SIZE(list_failed);
             int idx = 0;
+            int szlst = CIUT_ARRAY_SIZE(list_failed);
             if (szlst > 0) {
                 fprintf(stdout, CIUT_LOGHDR "List of FAILED tests (total %d):\n", szlst);
                 for(i = 0; i < szlst; i ++) {
