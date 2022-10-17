@@ -366,7 +366,7 @@ typedef struct _ciut_record_t {
         }
     }
 
-    inline static void usage(const char *progname)
+    inline static void ciut_usage(const char *progname)
     {
         fprintf(stderr, "Usage:\n");
         fprintf(stderr, "    %s <options>\n", progname);
@@ -443,7 +443,7 @@ typedef struct _ciut_record_t {
         for (i = 1; i < argc; i ++) {
             #define CHK_IDX(i) if (i >= argc) { fprintf(stderr, "Error in arguments. Use argument '-h' to show help.\n"); exit(1); }
             if (0 == strcmp("-h", argv[i])) {
-                usage(argv[0]);
+                ciut_usage(argv[0]);
                 return (0);
             } else if (0 == strcmp("-l", argv[i])) {
                 flg_list = 1;
@@ -682,7 +682,7 @@ TEST_CASE( .description="cuit test callback functions.", .skip=1 ) {
 
 CIUT_TEST_CASE( .description="cuit test misc func.", .skip=0 ) {
     CIUT_SECTION("test parameters 1") {
-        usage("");
+        ciut_usage("");
 
         CIUT_ASSERT(1 == filter_match(NULL, NULL));
         CIUT_ASSERT(1 == filter_match("", NULL));
