@@ -7,13 +7,13 @@ DOC_FILES= \
     Makefile.in \
     $(NULL)
 
-EXTRA_DIST= \
-    $(DOC_FILES) \
-    $(NULL)
+EXTRA_DIST=
 
 if ENABLE_DOXYGEN_DOC
 
-EXTRA_DIST=genfooter.tex genheader.tex
+EXTRA_DIST+= \
+    $(DOC_FILES) \
+    $(NULL)
 
 all-local: doxygen.stamp
 
