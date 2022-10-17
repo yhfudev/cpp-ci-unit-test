@@ -1,8 +1,8 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ([2.60])
-AC_INIT(ciut, 1.0.1, yhfudev@gmail.com)
+AC_PREREQ([2.71])
+AC_INIT([ciut],[1.0.1],[yhfudev@gmail.com])
 AC_CONFIG_SRCDIR([include/ciut.h])
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE(-Wall subdir-objects parallel-tests color-tests)
@@ -117,8 +117,7 @@ fi
 
 dnl Disable doc generation with doxygen option
 AC_ARG_ENABLE(doxygen-doc,
-              [AC_HELP_STRING([--disable-doxygen-doc],
-                              [disable document generation with doxygen])],
+              [AS_HELP_STRING([--disable-doxygen-doc],[disable document generation with doxygen])],
               , enable_doxygen_doc="yes")
 if test "x$enable_doxygen_doc" = "xyes"; then
   AC_CHECK_PROG(DOXYGEN,doxygen,doxygen,no)
@@ -128,8 +127,7 @@ if test "x$enable_doxygen_doc" = "xyes"; then
 fi
 dnl where to install the doxygen-generated HTML doc
 AC_ARG_WITH(html-docdir,
-            [AC_HELP_STRING([--with-html-docdir=DIR],
-                            [where to install the doxyten-generated HTML doc [PREFIX/share/doc/${PACKAGE_NAME}/html]])],
+            [AS_HELP_STRING([--with-html-docdir=DIR],[where to install the doxyten-generated HTML doc [PREFIX/share/doc/${PACKAGE_NAME}/html]])],
             [htmldocdir="$withval"], [htmldocdir=\$\{prefix\}/share/doc/${PACKAGE_NAME}/html])
 AC_SUBST(htmldocdir)
 AM_CONDITIONAL(ENABLE_DOXYGEN_DOC,test "x$enable_doxygen_doc" = "xyes")
