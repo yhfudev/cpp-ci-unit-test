@@ -47,7 +47,7 @@ test_stub_malloc(size_t size)
 //#define strncmp     test_stub_strncmp
 
 #define mkfifo(a,b) test_stub_mkfifo(a,b)
-#define unlink(a)   (0)
+//#define unlink(a)   (0)
 #define fork        test_stub_fork
 #define fopen       test_stub_fopen
 #define getline     test_stub_getline
