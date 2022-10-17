@@ -220,6 +220,52 @@ TEST_CASE( .name="log-writer", .description="Test log writer.", .skip=0 ) {
 }
 #endif
 
+#include "uctime.h"
+TEST_CASE( .name="ciut-uctime", .description="Test ciut uctime.", .skip=0 ) {
+    SECTION("test gettimeofday") {
+        struct timeval tv;
+        struct timezone tz;
+        memset(&tv, 0, sizeof(tv));
+        memset(&tz, 0, sizeof(tz));
+        REQUIRE(0 == gettimeofday(NULL, NULL));
+        REQUIRE(0 == gettimeofday(&tv, NULL));
+        REQUIRE(0 != tv.tv_sec);
+        REQUIRE(0 != tv.tv_usec);
+        //tz_minuteswest, tz_dsttime
+        REQUIRE(0 == gettimeofday(NULL, &tz));
+
+        memset(&tv, 0, sizeof(tv));
+        memset(&tz, 0, sizeof(tz));
+        REQUIRE(0 == gettimeofday(&tv, &tz));
+        REQUIRE(0 != tv.tv_sec);
+        REQUIRE(0 != tv.tv_usec);
+    }
+    SECTION("test timeval_sub") {
+        // int timeval_sub(struct timeval * tva, struct timeval * tvb, struct timeval * ret)
+        struct timeval tva;
+        struct timeval tvb;
+        struct timeval tvc;
+
+        memset(&tva, 0, sizeof(tva));
+        memset(&tvb, 0, sizeof(tvb));
+        memset(&tvc, 0, sizeof(tvc));
+        tva.tv_sec = 10;
+        tvb.tv_sec = 1;
+        REQUIRE(0 == timeval_sub(&tva, &tvb, &tvc));
+        REQUIRE(9 == tvc.tv_sec);
+        REQUIRE(0 == tvc.tv_usec);
+
+        memset(&tva, 0, sizeof(tva));
+        memset(&tvb, 0, sizeof(tvb));
+        memset(&tvc, 0, sizeof(tvc));
+        tva.tv_usec = 10;
+        tvb.tv_usec = 1;
+        REQUIRE(0 == timeval_sub(&tva, &tvb, &tvc));
+        REQUIRE(0 == tvc.tv_sec);
+        REQUIRE(9 == tvc.tv_usec);
+    }
+}
+
 #endif /* CIUT_ENABLED */
 
 
